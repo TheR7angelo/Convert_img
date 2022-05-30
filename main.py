@@ -1,16 +1,20 @@
-# This is a sample Python script.
+import xml.etree.ElementTree as ET
 
-# Press Maj+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+import glob
 
 
-# Press the green button in the gutter to run the script.
+def getFiles(path: str, ext="svg"):
+    return glob.glob(f"{path}/**/*.{ext}", recursive=True)
+
+def getCode(path: str):
+    tree = ET.parse(path)
+    return tree.getroot()
+
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    print(getFiles(path="test"))
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    truc = getCode(getFiles(path="test")[0])
+
+    print("hey")
