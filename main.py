@@ -19,7 +19,7 @@ def getFiles(path: str, ext="svg"):
     return glob.glob(f"{os.path.abspath(path)}/**/*.{ext}", recursive=True)
 
 
-def getParams(line: str):
+def getParams(line: str, name: defaultdict):
     line = line.replace("<svg ", "").replace(">", "")
     line = line.replace("\" ", "\"||")
     line = line.split("||")
@@ -30,9 +30,14 @@ def getParams(line: str):
         tmp[row[0]] = row[1]
     tmp["viewBox"] = tmp["viewBox"].replace('"', '').split(" ")
     tmp["viewBox"] = [f'"{item}"' for item in tmp["viewBox"]]
-    line = f"<Canvas xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Name={tmp['id']} Canvas.Left={tmp['viewBox'][0]} Canvas.Top={tmp['viewBox'][1]} Width={tmp['viewBox'][2]} Height={tmp['viewBox'][3]}>"
+    try:
+        line = f"<Canvas xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Name=\"{tmp['id']}\" Canvas.Left={tmp['viewBox'][0]} Canvas.Top={tmp['viewBox'][1]} Width={tmp['viewBox'][2]} Height={tmp['viewBox'][3]}>"
+    except KeyError:
+        line = f"<Canvas xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Name=\"Svg{name['svg']}\" Canvas.Left={tmp['viewBox'][0]} Canvas.Top={tmp['viewBox'][1]} Width={tmp['viewBox'][2]} Height={tmp['viewBox'][3]}>"
 
-    return line
+    name["svg"] += 1
+
+    return line, name
 
 
 def getStyle(line: str):
@@ -83,13 +88,26 @@ def getDict(path: str):
         elif "<svg" in line[:4]:
             print("params")
             tab += 1
-            xaml.append(getParams(line))
+            line, name = getParams(line=line, name=name)
+            xaml.append(line)
 
         elif "<style" in line:
             print("style")
             index = svg.find("</style>") + len("</style>")
             line = svg[start:index].replace("\n", "")
             fill = getStyle(line)
+
+        elif "<g" in line:
+            prefixe = "".join(["\t"] * tab)
+
+            if "id" in line:
+                name_calque = line.split('"')[1]
+                xaml.append(f"{prefixe}<Canvas Name=\"{name_calque}\">")
+            else:
+                xaml.append(f"{prefixe}<Canvas Name=\"g{name['group']}\">")
+                name["group"] += 1
+
+            tab += 1
 
         elif "<path" in line:
             line = line.replace("<path", "").replace("/>", "").strip()
@@ -110,16 +128,33 @@ def getDict(path: str):
                 tmp[row[0]] = f'"{row[1]}"'
             prefixe = "".join(["\t"] * tab)
 
-            xaml.append(f"{prefixe}<Path xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Name=\"path{name['path']}\" Fill={fill[tmp['class']]} Data={tmp['d']}/>")
+            xaml.append(f"{prefixe}<Path xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Name=\"Path{name['path']}\" Fill={fill[tmp['class']]} Data={tmp['d']}/>")
 
             name['path'] += 1
 
-        elif "<g>" in line:
-            prefixe = "".join(["\t"] * tab)
-            xaml.append(f"{prefixe}<Canvas Name=\"g{name['group']}\">")
-            name["group"] += 1
+        elif "<rect" in line:
+            line = line.replace("<rect", "").replace("/>", "").strip()
+            line = line.split('" ')
+            tmp = {}
+            for row in line:
+                if "style" in row:
+                    row = row.replace('"', '').split("=")
+                    row = f".st{name['st']}{{{row[1]}}}"
 
-            tab += 1
+                    fill = getStyle(row)
+
+                    row = f"class=\"st{name['st']}\""
+
+                    name["st"] += 1
+                row = row.replace('"', "")
+                row = row.split("=")
+                tmp[row[0]] = f'"{row[1]}"'
+            prefixe = "".join(["\t"] * tab)
+
+            xaml.append(f"{prefixe}<Rectangle xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Width={tmp['width']} Height={tmp['height']} Name=\"Rect{name['rect']}\" Fill={fill[tmp['class']]}/>")
+
+            name['rect'] += 1
+
 
 
         start = index
