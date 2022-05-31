@@ -201,8 +201,9 @@ def getDict(path: str):
             prefixe = "".join(["\t"] * tab)
             xaml.append(f"{prefixe}</Canvas>")
 
-        if "?" in line or "<!--" in line:
-            xaml.append(line)
+        if "?" in line: #  or "<!--" in line:
+            xaml.extend((line, "<!-- Generator: Python 3.10, SVG Convert XAML . SVG Version: 6.00 Build 0)  -->"))
+
         elif "<svg" in line[:4]:
             tab += 1
             line, name = getParams(line=line, name=name)
