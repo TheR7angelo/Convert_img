@@ -37,12 +37,12 @@ def getValue(line: str, name: defaultdict, geom: str, fill: defaultdict):
 
             fill = getStyle(row)
 
-            row = f"class=\"st{name['st']}\""
+            row = f"class=st{name['st']}"
 
             name["st"] += 1
         row = row.replace('"', "")
         row = row.split("=")
-        tmp[row[0]] = f'"{row[1]}"'
+        tmp[row[0]] = row[1]
 
     name[geom] += 1
 
@@ -55,7 +55,7 @@ def getPath(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
 
     prefixe = "".join(["\t"] * tab)
 
-    line = f"{prefixe}<Path xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Name=\"Path{name[geom]}\" Fill={fill[tmp['class']]} Data={tmp['d']}/>"
+    line = f'{prefixe}<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path{name[geom]}" Fill="{fill[tmp["class"]]}" Data="{tmp["d"]}"/>'
 
     return line, name, tab
 
@@ -66,9 +66,9 @@ def getRect(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
     prefixe = "".join(["\t"] * tab)
 
     try:
-        line = f"{prefixe}<Rectangle xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Canvas.Left={tmp['x']} Canvas.Top={tmp['y']} Width={tmp['width']} Height={tmp['height']} Name=\"Rect{name[geom]}\" Fill={fill[tmp['class']]}/>"
+        line = f'{prefixe}<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{tmp["x"]}" Canvas.Top="{tmp["y"]}" Width="{tmp["width"]}" Height="{tmp["height"]}" Name="Rect{name[geom]}" Fill="{fill[tmp["class"]]}"/>'
     except KeyError:
-        line = f"{prefixe}<Rectangle xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Width={tmp['width']} Height={tmp['height']} Name=\"Rect{name[geom]}\" Fill={fill[tmp['class']]}/>"
+        line = f'{prefixe}<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="{tmp["width"]}" Height="{tmp["height"]}" Name="Rect{name[geom]}" Fill="{fill[tmp["class"]]}"/>'
 
     return line, name, tab
 
@@ -78,7 +78,7 @@ def getPolygon(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: 
     tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill)
     prefixe = "".join(["\t"] * tab)
 
-    line = f"{prefixe}<Polygon xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Points={tmp['points']} Name=\"Polygon{name[geom]}\" FillRule=\"NonZero\" Fill={fill[tmp['class']]}/>"
+    line = f'{prefixe}<Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="{tmp["points"]}" Name="Polygon{name[geom]}" FillRule="NonZero" Fill="{fill[tmp["class"]]}"/>'
 
     return line, name, tab
 
@@ -87,9 +87,40 @@ def getText(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
     tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill)
     prefixe = "".join(["\t"] * tab)
 
-    line = f"<TextBlock xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Canvas.Left="
+    matrix = tmp['transform'].split("(")[1].split(")")[0].split(" ")
+    matrix = list(map(float, matrix))
+
+    params = tmp["class"].split(" ")
+
+    value = {}
+    for param in params:
+        if "#" in fill[param]:
+            value["color"] = fill[param]
+        elif "px" in fill[param]:
+            value["top"] = getFontSize(size=matrix[5], fontSize=fill[param])
+        else:
+            font = fill[param].replace("'", "").split("-")
+            value["family"] = getFontFamilly(font[0])
+            try:
+                value["style"] = font[1]
+            except IndexError:
+                pass
+
+    try:
+        line = f'{prefixe}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontStyle="{value["style"]}" FontSize="{fill[params[2]]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
+    except KeyError:
+        line = f'{prefixe}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontSize="{fill[params[2]]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
 
     return line, name, tab
+
+
+def getFontFamilly(familly: str):
+    familly = familly.split("-")
+    return " ".join(re.findall("[A-Z][^A-Z]*", familly[0]))
+
+
+def getFontSize(size: float, fontSize: str):
+    return size - float(fontSize.replace("px", ""))
 
 
 def getFiles(path: str, ext="svg"):
@@ -119,7 +150,7 @@ def getParams(line: str, name: defaultdict):
 
 def getStyle(line: str):
 
-    fill = defaultdict(lambda: '"#FFFFFF"')
+    fill = defaultdict(lambda: "#FFFFFF")
     lines = line.split("\t")
 
     for rows in lines:
@@ -127,7 +158,7 @@ def getStyle(line: str):
         if "<" not in row and ">" not in row:
             key = row[1:].split("{")[0]
             color = row.split(":")[1].split(";")[0]
-            fill[f'"{key}"'] = f'"{color}"'
+            fill[key] = color
     return fill
 
 
@@ -152,10 +183,8 @@ def getDict(path: str):
         line = svg[start:match.end()]
         index = match.end()
 
-        if "\n" in line:
-            line = line.replace("\n", "")
-        if "\t" in line:
-            line = line.replace("\t", "")
+        while char := next((x for x in ["\n", "\t", "\r"] if x in line), False):
+            line = line.replace(char, "")
 
         if balise_geom := next((x for x in ["<style", "<text"] if x in line), False):
             text = f"{balise_geom[:1]}/{balise_geom[1:]}>"
