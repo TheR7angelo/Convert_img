@@ -98,6 +98,7 @@ def getText(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
             value["color"] = fill[param]
         elif "px" in fill[param]:
             value["top"] = getFontSize(size=matrix[5], fontSize=fill[param])
+            value["size"] = fill[param]
         else:
             font = fill[param].replace("'", "").split("-")
             value["family"] = getFontFamilly(font[0])
@@ -107,9 +108,9 @@ def getText(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
                 pass
 
     try:
-        line = f'{prefixe}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontStyle="{value["style"]}" FontSize="{fill[params[2]]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
+        line = f'{prefixe}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontStyle="{value["style"]}" FontSize="{value["size"]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
     except KeyError:
-        line = f'{prefixe}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontSize="{fill[params[2]]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
+        line = f'{prefixe}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontSize="{value["size"]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
 
     return line, name, tab
 
@@ -183,7 +184,8 @@ def getDict(path: str):
         line = svg[start:match.end()]
         index = match.end()
 
-        while char := next((x for x in ["\n", "\t", "\r"] if x in line), False):
+        chars = [x for x in ["\n", "\t", "\r"] if x in line]
+        for char in chars:
             line = line.replace(char, "")
 
         if balise_geom := next((x for x in ["<style", "<text"] if x in line), False):
