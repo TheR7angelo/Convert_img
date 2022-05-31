@@ -1,5 +1,4 @@
 import os
-import traceback
 import re
 
 import glob
@@ -7,12 +6,79 @@ import glob
 from collections import defaultdict
 
 
-def geom(line: str):
-    pass
+def getGeom(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str):
+
+    match geom:
+        case "<path":
+            line, name, tab = getPath(line=line, name=name, tab=tab, fill=fill, geom=geom)
+        case "<rect":
+            line, name, tab = getRect(line=line, name=name, tab=tab, fill=fill, geom=geom)
+        case "<polygon":
+            line, name, tab = getPolygon(line=line, name=name, tab=tab, fill=fill, geom=geom)
+
+    return line, name, tab
 
 
-def getPath(line: str):
-    pass
+def getName(line: str, name: defaultdict, geom: str, fill: defaultdict):
+    line = line.replace(f"{geom}", "").replace("/>", "").strip()
+    line = line.split('" ')
+    tmp = {}
+    for row in line:
+        if "style" in row:
+            row = row.replace('"', '').split("=")
+            row = f".st{name['st']}{{{row[1]}}}"
+
+            fill = getStyle(row)
+
+            row = f"class=\"st{name['st']}\""
+
+            name["st"] += 1
+        row = row.replace('"', "")
+        row = row.split("=")
+        tmp[row[0]] = f'"{row[1]}"'
+
+    name[geom] += 1
+
+    return tmp, name, fill
+
+
+def getPath(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str):
+
+    tmp, name, fill = getName(line=line, name=name, geom=geom, fill=fill)
+
+    prefixe = "".join(["\t"] * tab)
+
+    line = f"{prefixe}<Path xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Name=\"Path{name['path']}\" Fill={fill[tmp['class']]} Data={tmp['d']}/>"
+
+    return line, name, tab
+
+
+def getRect(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str):
+
+    tmp, name, fill = getName(line=line, name=name, geom=geom, fill=fill)
+    prefixe = "".join(["\t"] * tab)
+
+    try:
+        line = f"{prefixe}<Rectangle xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Canvas.Left={tmp['x']} Canvas.Top={tmp['y']} Width={tmp['width']} Height={tmp['height']} Name=\"Rect{name['rect']}\" Fill={fill[tmp['class']]}/>"
+    except KeyError:
+        line = f"{prefixe}<Rectangle xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Width={tmp['width']} Height={tmp['height']} Name=\"Rect{name['rect']}\" Fill={fill[tmp['class']]}/>"
+
+    return line, name, tab
+
+
+def getPolygon(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str):
+
+    tmp, name, fill = getName(line=line, name=name, geom=geom, fill=fill)
+    prefixe = "".join(["\t"] * tab)
+
+    line = f"{prefixe}<Polygon xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Points={tmp['points']} Name=\"Polygon{name['polygon']}\" FillRule=\"NonZero\" Fill={fill[tmp['class']]}/>"
+
+    return line, name, tab
+
+
+def getTextBlock(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str):
+    tmp, name, fill = getName(line=line, name=name, geom=geom, fill=fill)
+    prefixe = "".join(["\t"] * tab)
 
 
 def getFiles(path: str, ext="svg"):
@@ -31,7 +97,7 @@ def getParams(line: str, name: defaultdict):
     tmp["viewBox"] = tmp["viewBox"].replace('"', '').split(" ")
     tmp["viewBox"] = [f'"{item}"' for item in tmp["viewBox"]]
     try:
-        line = f"<Canvas xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Name=\"{tmp['id']}\" Canvas.Left={tmp['viewBox'][0]} Canvas.Top={tmp['viewBox'][1]} Width={tmp['viewBox'][2]} Height={tmp['viewBox'][3]}>"
+        line = f"<Canvas xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Name={tmp['id']} Canvas.Left={tmp['viewBox'][0]} Canvas.Top={tmp['viewBox'][1]} Width={tmp['viewBox'][2]} Height={tmp['viewBox'][3]}>"
     except KeyError:
         line = f"<Canvas xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Name=\"Svg{name['svg']}\" Canvas.Left={tmp['viewBox'][0]} Canvas.Top={tmp['viewBox'][1]} Width={tmp['viewBox'][2]} Height={tmp['viewBox'][3]}>"
 
@@ -109,53 +175,8 @@ def getDict(path: str):
 
             tab += 1
 
-        elif "<path" in line:
-            line = line.replace("<path", "").replace("/>", "").strip()
-            line = line.split('" ')
-            tmp = {}
-            for row in line:
-                if "style" in row:
-                    row = row.replace('"', '').split("=")
-                    row = f".st{name['st']}{{{row[1]}}}"
-
-                    fill = getStyle(row)
-
-                    row = f"class=\"st{name['st']}\""
-
-                    name["st"] += 1
-                row = row.replace('"', "")
-                row = row.split("=")
-                tmp[row[0]] = f'"{row[1]}"'
-            prefixe = "".join(["\t"] * tab)
-
-            xaml.append(f"{prefixe}<Path xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Name=\"Path{name['path']}\" Fill={fill[tmp['class']]} Data={tmp['d']}/>")
-
-            name['path'] += 1
-
-        elif "<rect" in line:
-            line = line.replace("<rect", "").replace("/>", "").strip()
-            line = line.split('" ')
-            tmp = {}
-            for row in line:
-                if "style" in row:
-                    row = row.replace('"', '').split("=")
-                    row = f".st{name['st']}{{{row[1]}}}"
-
-                    fill = getStyle(row)
-
-                    row = f"class=\"st{name['st']}\""
-
-                    name["st"] += 1
-                row = row.replace('"', "")
-                row = row.split("=")
-                tmp[row[0]] = f'"{row[1]}"'
-            prefixe = "".join(["\t"] * tab)
-
-            xaml.append(f"{prefixe}<Rectangle xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Width={tmp['width']} Height={tmp['height']} Name=\"Rect{name['rect']}\" Fill={fill[tmp['class']]}/>")
-
-            name['rect'] += 1
-
-
+        if balise_geom := next((x for x in ["<path", "<rect", "<polygon"] if x in line), False):
+            geom, name, tab = getGeom(line=line, name=name, tab=tab, fill=fill, geom=balise_geom)
 
         start = index
 
@@ -165,18 +186,13 @@ def getDict(path: str):
 if __name__ == '__main__':
     print(getFiles(path="test"))
 
-    try:
+    for file in getFiles(path="test"):
+        truc = getDict(path=file)
 
-        for file in getFiles(path="test"):
-            truc = getDict(path=file)
+        directory, name = os.path.split(file)
+        name = f'{name.split(".")[0]}_tmp'
 
-            directory, name = os.path.split(file)
-            name = f'{name.split(".")[0]}_tmp'
+        with open(f"{directory}/{name}.xaml", "w") as output:
+            output.write(truc)
 
-            with open(f"{directory}/{name}.xaml", "w") as output:
-                output.write(truc)
-
-            print(truc)
-
-    except Exception:
-        traceback.print_exc()
+        print(truc)
