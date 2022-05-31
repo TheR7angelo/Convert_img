@@ -52,7 +52,6 @@ def getStyle(line: str):
 def getDict(path: str):
     with open(path, "r") as file:
         svg = file.read()
-    # return xmltodict.parse(file)
 
     fill = None
 
@@ -62,7 +61,6 @@ def getDict(path: str):
 
     start = 0
     xaml = []
-    end = False
     for match in re.finditer(">", svg):
         line = svg[start:match.end()]
         index = match.end()
@@ -98,18 +96,28 @@ def getDict(path: str):
             line = line.split('" ')
             tmp = {}
             for row in line:
+                if "style" in row:
+                    row = row.replace('"', '').split("=")
+                    row = f".st{name['st']}{{{row[1]}}}"
+
+                    fill = getStyle(row)
+
+                    row = f"class=\"st{name['st']}\""
+
+                    name["st"] += 1
                 row = row.replace('"', "")
                 row = row.split("=")
                 tmp[row[0]] = f'"{row[1]}"'
             prefixe = "".join(["\t"] * tab)
-            name['path'] += 1
 
             xaml.append(f"{prefixe}<Path xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Name=\"path{name['path']}\" Fill={fill[tmp['class']]} Data={tmp['d']}/>")
 
+            name['path'] += 1
+
         elif "<g>" in line:
             prefixe = "".join(["\t"] * tab)
-            name["group"] += 1
             xaml.append(f"{prefixe}<Canvas Name=\"g{name['group']}\">")
+            name["group"] += 1
 
             tab += 1
 
