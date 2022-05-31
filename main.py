@@ -15,12 +15,19 @@ def getGeom(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
             line, name, tab = getRect(line=line, name=name, tab=tab, fill=fill, geom=geom)
         case "<polygon":
             line, name, tab = getPolygon(line=line, name=name, tab=tab, fill=fill, geom=geom)
+        case "<text":
+            line, name, tab = getText(line=line, name=name, tab=tab, fill=fill, geom=geom)
 
     return line, name, tab
 
 
-def getName(line: str, name: defaultdict, geom: str, fill: defaultdict):
+def getValue(line: str, name: defaultdict, geom: str, fill: defaultdict):
     line = line.replace(f"{geom}", "").replace("/>", "").strip()
+
+    if "</" in line:
+        value = line.split(">")[1].split("<")[0]
+        line = f"{line.split('>')[0]} value=\"{value}\""
+
     line = line.split('" ')
     tmp = {}
     for row in line:
@@ -44,41 +51,45 @@ def getName(line: str, name: defaultdict, geom: str, fill: defaultdict):
 
 def getPath(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str):
 
-    tmp, name, fill = getName(line=line, name=name, geom=geom, fill=fill)
+    tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill)
 
     prefixe = "".join(["\t"] * tab)
 
-    line = f"{prefixe}<Path xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Name=\"Path{name['path']}\" Fill={fill[tmp['class']]} Data={tmp['d']}/>"
+    line = f"{prefixe}<Path xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Name=\"Path{name[geom]}\" Fill={fill[tmp['class']]} Data={tmp['d']}/>"
 
     return line, name, tab
 
 
 def getRect(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str):
 
-    tmp, name, fill = getName(line=line, name=name, geom=geom, fill=fill)
+    tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill)
     prefixe = "".join(["\t"] * tab)
 
     try:
-        line = f"{prefixe}<Rectangle xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Canvas.Left={tmp['x']} Canvas.Top={tmp['y']} Width={tmp['width']} Height={tmp['height']} Name=\"Rect{name['rect']}\" Fill={fill[tmp['class']]}/>"
+        line = f"{prefixe}<Rectangle xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Canvas.Left={tmp['x']} Canvas.Top={tmp['y']} Width={tmp['width']} Height={tmp['height']} Name=\"Rect{name[geom]}\" Fill={fill[tmp['class']]}/>"
     except KeyError:
-        line = f"{prefixe}<Rectangle xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Width={tmp['width']} Height={tmp['height']} Name=\"Rect{name['rect']}\" Fill={fill[tmp['class']]}/>"
+        line = f"{prefixe}<Rectangle xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Width={tmp['width']} Height={tmp['height']} Name=\"Rect{name[geom]}\" Fill={fill[tmp['class']]}/>"
 
     return line, name, tab
 
 
 def getPolygon(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str):
 
-    tmp, name, fill = getName(line=line, name=name, geom=geom, fill=fill)
+    tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill)
     prefixe = "".join(["\t"] * tab)
 
-    line = f"{prefixe}<Polygon xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Points={tmp['points']} Name=\"Polygon{name['polygon']}\" FillRule=\"NonZero\" Fill={fill[tmp['class']]}/>"
+    line = f"{prefixe}<Polygon xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Points={tmp['points']} Name=\"Polygon{name[geom]}\" FillRule=\"NonZero\" Fill={fill[tmp['class']]}/>"
 
     return line, name, tab
 
 
-def getTextBlock(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str):
-    tmp, name, fill = getName(line=line, name=name, geom=geom, fill=fill)
+def getText(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str):
+    tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill)
     prefixe = "".join(["\t"] * tab)
+
+    line = f"<TextBlock xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" Canvas.Left="
+
+    return line, name, tab
 
 
 def getFiles(path: str, ext="svg"):
@@ -101,7 +112,7 @@ def getParams(line: str, name: defaultdict):
     except KeyError:
         line = f"<Canvas xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Name=\"Svg{name['svg']}\" Canvas.Left={tmp['viewBox'][0]} Canvas.Top={tmp['viewBox'][1]} Width={tmp['viewBox'][2]} Height={tmp['viewBox'][3]}>"
 
-    name["svg"] += 1
+    name["<svg"] += 1
 
     return line, name
 
@@ -120,9 +131,14 @@ def getStyle(line: str):
     return fill
 
 
+def getFileData(path: str):
+    with open(path, "rb") as file:
+        data = file.read().decode("UTF-8")
+    return data
+
+
 def getDict(path: str):
-    with open(path, "r") as file:
-        svg = file.read()
+    svg = getFileData(path=path)
 
     fill = None
 
@@ -141,6 +157,11 @@ def getDict(path: str):
         if "\t" in line:
             line = line.replace("\t", "")
 
+        if balise_geom := next((x for x in ["<style", "<text"] if x in line), False):
+            text = f"{balise_geom[:1]}/{balise_geom[1:]}>"
+            index = svg[start:].find(text) + len(text) + start
+            line = svg[start:index].replace("\n", "")
+
         if "</svg" in line:
             tab = 0
             xaml.append("</Canvas>")
@@ -152,15 +173,11 @@ def getDict(path: str):
         if "?" in line or "<!--" in line:
             xaml.append(line)
         elif "<svg" in line[:4]:
-            print("params")
             tab += 1
             line, name = getParams(line=line, name=name)
             xaml.append(line)
 
         elif "<style" in line:
-            print("style")
-            index = svg.find("</style>") + len("</style>")
-            line = svg[start:index].replace("\n", "")
             fill = getStyle(line)
 
         elif "<g" in line:
@@ -170,13 +187,14 @@ def getDict(path: str):
                 name_calque = line.split('"')[1]
                 xaml.append(f"{prefixe}<Canvas Name=\"{name_calque}\">")
             else:
-                xaml.append(f"{prefixe}<Canvas Name=\"g{name['group']}\">")
-                name["group"] += 1
+                xaml.append(f"{prefixe}<Canvas Name=\"g{name['<g']}\">")
+                name["<g"] += 1
 
             tab += 1
 
-        if balise_geom := next((x for x in ["<path", "<rect", "<polygon"] if x in line), False):
-            geom, name, tab = getGeom(line=line, name=name, tab=tab, fill=fill, geom=balise_geom)
+        if balise_geom := next((x for x in ["<path", "<rect", "<polygon", "<text"] if x in line), False):
+            line, name, tab = getGeom(line=line, name=name, tab=tab, fill=fill, geom=balise_geom)
+            xaml.append(line)
 
         start = index
 
@@ -184,7 +202,6 @@ def getDict(path: str):
 
 
 if __name__ == '__main__':
-    print(getFiles(path="test"))
 
     for file in getFiles(path="test"):
         truc = getDict(path=file)
