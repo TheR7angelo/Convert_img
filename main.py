@@ -240,7 +240,9 @@ if __name__ == '__main__':
         directory, name = os.path.split(file)
         name = f'{name.split(".")[0]}_tmp'
 
-        with open(f"{directory}/{name}.xaml", "w") as output:
+
+
+        with open(f"{directory}/{name}.xaml", "w", encoding='utf-8') as output:
             output.write(truc)
 
         print(truc)
