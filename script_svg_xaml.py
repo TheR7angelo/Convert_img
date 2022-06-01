@@ -164,9 +164,8 @@ def getStyle(line: str):
 
 
 def getFileData(path: str):
-    with open(path, "rb") as file:
-        data = file.read().decode("UTF-8")
-    return data
+    with open(path, "r", encoding="UTF-8") as file:
+        return file.read()
 
 
 def getDict(path: str):
