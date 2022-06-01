@@ -42,11 +42,12 @@ def getRect(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
     tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill, color_group=color_group)
     prefixe = "".join(["\t"] * tab)
 
-    try:
-        line = f'{prefixe}<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{tmp["x"]}" Canvas.Top="{tmp["y"]}" Width="{tmp["width"]}" Height="{tmp["height"]}" Name="Rect{name[geom]}" Fill="{fill[tmp["class"]]}"/>'
-    except KeyError:
-        line = f'{prefixe}<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="{tmp["width"]}" Height="{tmp["height"]}" Name="Rect{name[geom]}" Fill="{fill[tmp["class"]]}"/>'
+    if "x" in list(fill):
+        line = f'{prefixe}<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{tmp["x"]}" Canvas.Top="{tmp["y"]}" Width="{tmp["width"]}" Height="{tmp["height"]}" Name="Rect{name[geom]}"'
+    else:
+        line = f'{prefixe}<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="{tmp["width"]}" Height="{tmp["height"]}" Name="Rect{name[geom]}"'
 
+    line = f'{line} Fill="{fill[list(fill)[-1]]}"' if color_group else f'{line} Fill="{fill[tmp["class"]]}"'
 
     return line, name, tab, fill, color_group
 
@@ -56,7 +57,8 @@ def getPolygon(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: 
     tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill, color_group=color_group)
     prefixe = "".join(["\t"] * tab)
 
-    line = f'{prefixe}<Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="{tmp["points"]}" Name="Polygon{name[geom]}" FillRule="NonZero" Fill="{fill[tmp["class"]]}"/>'
+    line = f'{prefixe}<Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="{tmp["points"]}" Name="Polygon{name[geom]}" FillRule="NonZero"'
+    line = f'{line} Fill="{fill[list(fill)[-1]]}"' if color_group else f'{line} Fill="{fill[tmp["class"]]}"'
 
     return line, name, tab, fill, color_group
 
