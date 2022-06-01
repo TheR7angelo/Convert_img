@@ -35,8 +35,7 @@ def getValue(line: str, name: defaultdict, geom: str, fill: defaultdict):
             row = row.replace('"', '').split("=")
             row = f".st{name['st']}{{{row[1]}}}"
 
-            fill = getStyle(row)
-
+            fill = getStyle(row) if fill is None else fill | getStyle(row)
             row = f"class=st{name['st']}"
 
             name["st"] += 1
