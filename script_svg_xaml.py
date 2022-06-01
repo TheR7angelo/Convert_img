@@ -47,7 +47,7 @@ def getRect(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
     else:
         line = f'{prefixe}<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="{tmp["width"]}" Height="{tmp["height"]}" Name="Rect{name[geom]}"'
 
-    line = f'{line} Fill="{fill[list(fill)[-1]]}"' if color_group else f'{line} Fill="{fill[tmp["class"]]}"'
+    line = f'{line} Fill="{fill[list(fill)[-1]]}"/>' if color_group else f'{line} Fill="{fill[tmp["class"]]}"/>'
 
     return line, name, tab, fill, color_group
 
@@ -58,7 +58,7 @@ def getPolygon(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: 
     prefixe = "".join(["\t"] * tab)
 
     line = f'{prefixe}<Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="{tmp["points"]}" Name="Polygon{name[geom]}" FillRule="NonZero"'
-    line = f'{line} Fill="{fill[list(fill)[-1]]}"' if color_group else f'{line} Fill="{fill[tmp["class"]]}"'
+    line = f'{line} Fill="{fill[list(fill)[-1]]}"/>' if color_group else f'{line} Fill="{fill[tmp["class"]]}"/>'
 
     return line, name, tab, fill, color_group
 
@@ -76,7 +76,7 @@ def getText(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
     for param in params:
         if "#" in fill[param]:
             value["color"] = fill[param]
-        elif "px" in fill[param]:
+        elif "px" in fill[param].lower():
             value["top"] = getFontSize(size=matrix[5], fontSize=fill[param])
             value["size"] = fill[param]
         else:
@@ -110,7 +110,6 @@ def getGroup(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: st
         line = f"{prefixe}<Canvas Name=\"{geom[-1]}{name[geom]}\">"
         name[geom] += 1
 
-
     tab += 1
 
     return line, name, tab, fill, color_group
@@ -134,12 +133,13 @@ def getStyle(line: str):
         row = rows.split("}")[0]
         if "<" not in row and ">" not in row:
             key = row[1:].split("{")[0]
-            color = row.split(":")[1].split(";")[0].replace("#", "")
+            color = row.split(":")[1].split(";")[0]
 
-            if len(color) == 3: #color mode CSS
-                color = "".join([char*2 for char in color])
-            color = f"#FF{color}".upper()
-
+            if "#" in color:
+                color = color.replace("#", "")
+                if len(color) == 3: #color mode CSS
+                    color = "".join([char*2 for char in color])
+                color = f"#FF{color}".upper() if len(color) == 6 else f"#{color}"
             fill[key] = color
     return fill
 
@@ -175,6 +175,7 @@ def getParams(line: str, name: defaultdict):
     line = line.replace("<svg ", "").replace(">", "")
     line = line.replace("\" ", "\"||")
     line = line.split("||")
+    line = [item.strip() for item in line]
 
     tmp = {}
     for row in line:
@@ -250,7 +251,7 @@ def getDict(path: str):
         if "?" in line: #  or "<!--" in line:
             xaml.extend((line, "<!-- Generator: Python 3.10, SVG Convert XAML . SVG Version: 6.00 Build 0)  -->"))
 
-        elif "<svg" in line[:4]:
+        elif "<svg" in line:
             tab += 1
             line, name = getParams(line=line, name=name)
             xaml.append(line)
