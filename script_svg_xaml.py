@@ -30,7 +30,7 @@ def getPath(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
     prefixe = "".join(["\t"] * tab)
 
 
-    line = f'{prefixe}<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path{name[geom]}'
+    line = f'{prefixe}<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path{name[geom]}"'
     line = f'{line} Fill="{fill[list(fill)[-1]]}"' if color_group else f'{line} Fill="{fill[tmp["class"]]}"'
     line = f'{line} Data="{tmp["d"]}"/>'
 
@@ -226,7 +226,7 @@ def getDict(path: str):
 
         chars = [x for x in ["\n", "\t", "\r"] if x in line]
         for char in chars:
-            line = line.replace(char, "")
+            line = line.replace(char, " ")
 
         if balise_geom := next((x for x in ["<style", "<text"] if x in line), False):
             text = f"{balise_geom[:1]}/{balise_geom[1:]}>"
