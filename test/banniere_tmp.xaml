@@ -6,12 +6,12 @@
 	</Canvas>
 	<Canvas Name="Calque_1_00000136406445972492385130000006098816901012748172_">
 		<Canvas Name="g0">
-			<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="840.4" Height="141.2" Name="Rect2" Fill="#FFF18714"/>
+			<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="17" Canvas.Top="6" Width="840.4" Height="141.2" Name="Rect2" Fill="#FFF18714"/>
 			<Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="11,161.4 4,161.4 4,6 11,6 11,154.3 858.4,154.3 858.4,161.4   " Name="Polygon1" FillRule="NonZero" Fill="#FFF18714"/>
 		</Canvas>
 		<Canvas Name="g1">
-			<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="7" Height="42.4" Name="Rect3" Fill="#FFF18714"/>
-			<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="7" Height="42.4" Name="Rect4" Fill="#FFF18714"/>
+			<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="4" Canvas.Top="178.4" Width="7" Height="42.4" Name="Rect3" Fill="#FFF18714"/>
+			<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="851.4" Canvas.Top="178.4" Width="7" Height="42.4" Name="Rect4" Fill="#FFF18714"/>
 		</Canvas>
 	</Canvas>
 	<Canvas Name="Calque_2_00000168833045407797480790000009674397716490115217_">
