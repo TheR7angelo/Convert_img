@@ -134,7 +134,12 @@ def getStyle(line: str):
         row = rows.split("}")[0]
         if "<" not in row and ">" not in row:
             key = row[1:].split("{")[0]
-            color = row.split(":")[1].split(";")[0]
+            color = row.split(":")[1].split(";")[0].replace("#", "")
+
+            if len(color) == 3: #color mode CSS
+                color = "".join([char*2 for char in color])
+            color = f"#FF{color}".upper()
+
             fill[key] = color
     return fill
 
