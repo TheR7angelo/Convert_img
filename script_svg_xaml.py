@@ -195,8 +195,8 @@ def getParams(line: str, name: defaultdict):
 
 def setColors(line: str, name: defaultdict, fill: defaultdict):
     text = "st"
-    index = line.find("fill=")
-    row = line[index:].replace('"', '').replace(">", "").split("=")
+    index = line.find("fill")
+    row = line[index:].replace(":", "=").replace('"', '').replace(">", "").split("=")
     row = f".{text}{name[text]}{{fill:{row[1]};}}"
 
     fill = getStyle(row) if fill is None else fill | getStyle(row)
