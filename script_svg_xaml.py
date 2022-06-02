@@ -29,8 +29,6 @@ def getPath(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
 
     prefixe = "".join(["\t"] * tab)
 
-
-
     line = f'{prefixe}<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path{name[geom]}"'
     line = f'{line} Fill="{fill[list(fill)[-1]]["color"]}"' if color_group else f'{line} Fill="{fill[tmp["class"]]["color"]}"' if "fill" in line else f'{line} Fill="#FF000000"'
     line = f'{line} Data="{tmp["d"]}"/>'
