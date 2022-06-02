@@ -181,6 +181,10 @@ def getParams(line: str, name: defaultdict):
     for row in line:
         row = row.split("=")
         tmp[row[0]] = row[1]
+
+    if "viewBox" not in list(tmp):
+        tmp["viewBox"] = f"0 0 {tmp['width']} {tmp['height']}"
+
     tmp["viewBox"] = tmp["viewBox"].replace('"', '').split(" ")
     tmp["viewBox"] = [f'"{item}"' for item in tmp["viewBox"]]
     try:
