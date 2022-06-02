@@ -83,6 +83,8 @@ def getText(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
             font = fill[param].replace("'", "").split("-")
             value["family"] = getFontFamilly(font[0])
             try:
+                if font[1].lower() == "regular":
+                    font[1] = "Normal"
                 value["style"] = font[1]
             except IndexError:
                 pass
