@@ -88,9 +88,9 @@ def getText(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
                 pass
 
     try:
-        line = f'{prefixe}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontStyle="{value["style"]}" FontSize="{value["size"]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
+        line = f'{prefixe}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontStyle="{value["style"]}" FontSize="{value["size"]}" Foreground="{value["color"]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
     except KeyError:
-        line = f'{prefixe}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontSize="{value["size"]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
+        line = f'{prefixe}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontSize="{value["size"]}" Foreground="{value["color"]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
 
     return line, name, tab, fill, color_group
 
@@ -215,6 +215,7 @@ def getFiles(path: str, ext="svg"):
 
 
 def getFileData(path: str):
+    print(path)
     with open(path, "r", encoding="UTF-8") as file:
         return file.read()
 

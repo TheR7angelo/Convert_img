@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This file is compatible with Silverlight-->
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Name="Calque_1" Canvas.Left="0" Canvas.Top="0" Width="183.4" Height="30">
+  <Canvas.RenderTransform>
+    <TranslateTransform X="0" Y="0"/>
+  </Canvas.RenderTransform>
+  <Canvas.Resources/>
+  <!--Unknown tag: sodipodi:namedview-->
+  <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path157" Fill="#000000" Data="M178.4 1c2.2 0 4 1.8 4 4v20c0 2.2-1.8 4-4 4H5c-2.2 0-4-1.8-4-4V5c0-2.2 1.8-4 4-4H178.4 M178.4 0H5  C2.2 0 0 2.2 0 5v20c0 2.8 2.2 5 5 5h173.4c2.8 0 5-2.2 5-5V5C183.4 2.2 181.2 0 178.4 0L178.4 0z"/>
+  <Canvas Name="g165">
+    <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="4.4" Canvas.Top="10.3" Width="4.1" Height="12.7" Name="rect159" Fill="#000000"/>
+    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path161" Fill="#000000" Data="M19.8 10.4c0 0-0.1 0-0.1 0c-0.1 0-0.1 0-0.2 0c-0.2 0-0.5-0.1-0.7-0.1c-2.4 0-4 1.8-4.5 2.4v-2.4h-4.1V23h4.1   v-7c0 0 3.1-4.4 4.5-1.2c0 2.9 0 8.1 0 8.1h4.1v-8.6C22.9 12.5 21.6 10.9 19.8 10.4z"/>
+    <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="4.4" Canvas.Top="4.5" Width="4" Height="4" Name="circle163" Fill="#000000"/>
+  </Canvas>
+  <TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" FontSize="12" Name="text167">TheR7angelo</TextBlock>
+</Canvas>
