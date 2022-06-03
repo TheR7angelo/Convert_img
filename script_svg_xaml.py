@@ -31,11 +31,11 @@ def getPath(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
 
     tabulation = "".join(["\t"] * tab)
 
-    line = f'{tabulation}<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path{name[geom]}"'
-    line = f'{line} Fill="{fill[list(fill)[-1]]["color"]}"' if color_group else f'{line} Fill="{fill[tmp["class"]]["color"]}"' if "fill" in line else f'{line} Fill="#FF000000"'
-    line = f'{line} Data="{tmp["d"]}"/>'
+    row = f'{tabulation}<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path{name[geom]}"'
+    row = f'{row} Fill="{fill[list(fill)[-1]]["color"]}"' if color_group else f'{row} Fill="{fill[tmp["class"]]["color"]}"' if "fill" in line else f'{row} Fill="#FF000000"'
+    row = f'{row} Data="{tmp["d"]}"/>'
 
-    return line, name, tab, fill, color_group
+    return row, name, tab, fill, color_group
 
 
 def getRect(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
@@ -47,11 +47,11 @@ def getRect(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
         if key not in list(tmp):
             tmp[key] = "0"
 
-    line = f'{tabulation}<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{tmp["x"]}" Canvas.Top="{tmp["y"]}" Width="{tmp["width"]}" Height="{tmp["height"]}" Name="Rect{name[geom]}"'
+    row = f'{tabulation}<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{tmp["x"]}" Canvas.Top="{tmp["y"]}" Width="{tmp["width"]}" Height="{tmp["height"]}" Name="Rect{name[geom]}"'
 
-    line = f'{line} Fill="{fill[list(fill)[-1]]["color"]}"/>' if color_group else f'{line} Fill="{fill[tmp["class"]]["color"]}"/>' if "fill" in line else f'{line} Fill="#FF000000"/>'
+    row = f'{row} Fill="{fill[list(fill)[-1]]["color"]}"/>' if color_group else f'{row} Fill="{fill[tmp["class"]]["color"]}"/>' if "fill" in line else f'{row} Fill="#FF000000"/>'
 
-    return line, name, tab, fill, color_group
+    return row, name, tab, fill, color_group
 
 
 def getEllipse(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):

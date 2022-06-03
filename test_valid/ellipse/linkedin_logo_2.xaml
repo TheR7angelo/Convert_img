@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This file is compatible with Silverlight-->
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Name="Capa_1" Canvas.Left="0" Canvas.Top="0" Width="512" Height="512">
+  <Canvas.RenderTransform>
+    <TranslateTransform X="0" Y="0"/>
+  </Canvas.RenderTransform>
+  <Canvas.Resources/>
+  <!--Unknown tag: sodipodi:namedview-->
+  <Canvas Name="g705">
+    <Canvas Name="g703">
+      <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Top="160" Width="114.5" Height="352" Name="rect701" Fill="#000000"/>
+    </Canvas>
+  </Canvas>
+  <Canvas Name="g711">
+    <Canvas Name="g709">
+      <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path707" Fill="#000000" Data="M426.4 164.1c-1.2-0.4-2.4-0.8-3.6-1.2c-1.5-0.4-3.1-0.6-4.6-0.9c-6.1-1.2-12.7-2.1-20.5-2.1    c-66.8 0-109.1 48.5-123 67.3V160H160v352h114.5V320c0 0 86.5-120.5 123-32c0 79 0 224 0 224H512V274.5    C512 221.3 475.6 177 426.4 164.1z"/>
+    </Canvas>
+  </Canvas>
+  <Canvas Name="g717">
+    <Canvas Name="g715">
+      <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="160" Width="112" Canvas.Top="86" Height="62" Name="ellipse713" Fill="#000000"/>
+    </Canvas>
+  </Canvas>
+</Canvas>
