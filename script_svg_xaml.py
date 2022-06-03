@@ -62,14 +62,16 @@ def getEllipse(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: 
     if "r" in list(tmp):
         tmp["Width"] = f'{float(tmp["r"]) * 2}'
         tmp["Height"] = f'{float(tmp["r"]) * 2}'
+        tmp["left"] = f'{float(tmp["cx"]) - float(tmp["r"])}'
+        tmp["top"] = f'{float(tmp["cy"]) - float(tmp["r"])}'
     else:
         tmp["Width"] = f'{float(tmp["rx"]) * 2}'
         tmp["Height"] = f'{float(tmp["ry"]) * 2}'
+        tmp["left"] = f'{float(tmp["cx"]) - float(tmp["rx"])}'
+        tmp["top"] = f'{float(tmp["cy"]) - float(tmp["ry"])}'
 
-    'Canvas.Left="0" Canvas.Top="0"'
-
-    line = f'{tabulation}<Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="0" Canvas.Top="0" Width="{tmp["Width"]}" Height="{tmp["Height"]}"'
-    line = f'{line} Fill="{fill[list(fill)[-1]]["color"]}"/>' if color_group else f'{line} Fill="{fill[tmp["class"]]["color"]}"/>' if "fill" in line else f'{line} Fill="#FFFFFFFF"/>'
+    line = f'{tabulation}<Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{tmp["left"]}" Canvas.Top="{tmp["top"]}" Width="{tmp["Width"]}" Height="{tmp["Height"]}"'
+    line = f'{line} Fill="{fill[list(fill)[-1]]["color"]}"/>' if color_group else f'{line} Fill="{fill[tmp["class"]]["color"]}"/>' if "fill" in line else f'{line} Fill="#FF000000"/>'
 
     return line, name, tab, fill, color_group
 
