@@ -29,9 +29,8 @@ def getPath(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
 
     prefixe = "".join(["\t"] * tab)
 
-
     line = f'{prefixe}<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path{name[geom]}"'
-    line = f'{line} Fill="{fill[list(fill)[-1]]["color"]}"' if color_group else f'{line} Fill="{fill[tmp["class"]]["color"]}"' if "fill" in line else f'{line} Fill="#FF000000"/>'
+    line = f'{line} Fill="{fill[list(fill)[-1]]["color"]}"' if color_group else f'{line} Fill="{fill[tmp["class"]]["color"]}"' if "fill" in line else f'{line} Fill="#FF000000"'
     line = f'{line} Data="{tmp["d"]}"/>'
 
     return line, name, tab, fill, color_group
@@ -74,21 +73,22 @@ def getText(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
 
     value = {}
     for param in params:
-        for valeurs in fill[param]:
-            if "#" in valeurs:
-                value["color"] = fill[param]
-            elif "px" in valeurs.lower():
-                value["top"] = getFontSize(size=matrix[5], fontSize=fill[param])
-                value["size"] = fill[param]
-            else:
-                font = valeurs.replace("'", "").split("-")
-                value["family"] = getFontFamilly(font[0])
-                try:
-                    if font[1].lower() == "regular":
-                        font[1] = "Normal"
-                    value["style"] = font[1]
-                except IndexError:
-                    pass
+        for key, valeurs in fill[param].items():
+            match key:
+                case "color":
+                    value[key] = valeurs
+                case "font-family":
+                    font = valeurs.replace("'", "").split("-")
+                    value["family"] = getFontFamilly(font[0])
+                    try:
+                        if font[1].lower() == "regular":
+                            font[1] = "Normal"
+                        value["style"] = font[1]
+                    except IndexError:
+                        pass
+                case "font-size":
+                    value["top"] = getFontSize(size=matrix[5], fontSize=valeurs)
+                    value["size"] = valeurs
 
     try:
         line = f'{prefixe}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontStyle="{value["style"]}" FontSize="{value["size"]}" Foreground="{value["color"]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
