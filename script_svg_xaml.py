@@ -29,9 +29,9 @@ def getPath(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
 
     tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill, color_group=color_group)
 
-    prefixe = "".join(["\t"] * tab)
+    tabulation = "".join(["\t"] * tab)
 
-    line = f'{prefixe}<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path{name[geom]}"'
+    line = f'{tabulation}<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path{name[geom]}"'
     line = f'{line} Fill="{fill[list(fill)[-1]]["color"]}"' if color_group else f'{line} Fill="{fill[tmp["class"]]["color"]}"' if "fill" in line else f'{line} Fill="#FF000000"'
     line = f'{line} Data="{tmp["d"]}"/>'
 
@@ -41,14 +41,15 @@ def getPath(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
 def getRect(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
 
     tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill, color_group=color_group)
-    prefixe = "".join(["\t"] * tab)
+    tabulation = "".join(["\t"] * tab)
 
-    if "x" in list(tmp):
-        line = f'{prefixe}<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{tmp["x"]}" Canvas.Top="{tmp["y"]}" Width="{tmp["width"]}" Height="{tmp["height"]}" Name="Rect{name[geom]}"'
-    else:
-        line = f'{prefixe}<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="{tmp["width"]}" Height="{tmp["height"]}" Name="Rect{name[geom]}"'
+    for key in ["x", "y"]:
+        if key not in list(tmp):
+            tmp[key] = "0"
 
-    line = f'{line} Fill="{fill[list(fill)[-1]]}"/>' if color_group else f'{line} Fill="{fill[tmp["class"]]}"/>' if "fill" in line else f'{line} Fill="#FF000000"/>'
+    line = f'{tabulation}<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{tmp["x"]}" Canvas.Top="{tmp["y"]}" Width="{tmp["width"]}" Height="{tmp["height"]}" Name="Rect{name[geom]}"'
+
+    line = f'{line} Fill="{fill[list(fill)[-1]]["color"]}"/>' if color_group else f'{line} Fill="{fill[tmp["class"]]["color"]}"/>' if "fill" in line else f'{line} Fill="#FF000000"/>'
 
     return line, name, tab, fill, color_group
 
@@ -56,15 +57,15 @@ def getRect(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
 def getEllipse(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
 
     tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill, color_group=color_group)
-    prefixe = "".join(["\t"] * tab)
+    tabulation = "".join(["\t"] * tab)
 
     tmp["Width"] = f'{float(tmp["r"]) * 2}'
     tmp["Height"] = f'{float(tmp["r"]) * 2}'
 
-    'Canvas.Left = "0" Canvas.Top = "0" Width = "112" Height = "112" Name = "circle67" Fill = "#000000" />'
+    'Canvas.Left="0" Canvas.Top="0"'
 
-    line = "<Ellipse xmlns: x = \"http://schemas.microsoft.com/winfx/2006/xaml\" "
-    line = f'{line} Fill="{fill[list(fill)[-1]]}"/>' if color_group else f'{line} Fill="{fill[tmp["class"]]}"/>' if "fill" in line else f'{line} Fill="#FF000000"/>'
+    line = f'{tabulation}<Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="0" Canvas.Top="0" Width="{tmp["Width"]}" Height="{tmp["Height"]}"'
+    line = f'{line} Fill="{fill[list(fill)[-1]]["color"]}"/>' if color_group else f'{line} Fill="{fill[tmp["class"]]["color"]}"/>' if "fill" in line else f'{line} Fill="#FF000000"/>'
 
     return line, name, tab, fill, color_group
 
@@ -72,17 +73,17 @@ def getEllipse(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: 
 def getPolygon(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
 
     tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill, color_group=color_group)
-    prefixe = "".join(["\t"] * tab)
+    tabulation = "".join(["\t"] * tab)
 
-    line = f'{prefixe}<Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="{tmp["points"]}" Name="Polygon{name[geom]}" FillRule="NonZero"'
-    line = f'{line} Fill="{fill[list(fill)[-1]]}"/>' if color_group else f'{line} Fill="{fill[tmp["class"]]}"/>'
+    line = f'{tabulation}<Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="{tmp["points"]}" Name="Polygon{name[geom]}" FillRule="NonZero"'
+    line = f'{line} Fill="{fill[list(fill)[-1]]["color"]}"/>' if color_group else f'{line} Fill="{fill[tmp["class"]]["color"]}"/>' if "fill" in line else f'{line} Fill="#FF000000"/>'
 
     return line, name, tab, fill, color_group
 
 
 def getText(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
     tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill, color_group=color_group)
-    prefixe = "".join(["\t"] * tab)
+    tabulation = "".join(["\t"] * tab)
 
     matrix = tmp['transform'].split("(")[1].split(")")[0].split(" ")
     matrix = list(map(float, matrix))
@@ -109,16 +110,16 @@ def getText(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
                     value["size"] = valeurs
 
     try:
-        line = f'{prefixe}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontStyle="{value["style"]}" FontSize="{value["size"]}" Foreground="{value["color"]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
+        line = f'{tabulation}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontStyle="{value["style"]}" FontSize="{value["size"]}" Foreground="{value["color"]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
     except KeyError:
-        line = f'{prefixe}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontSize="{value["size"]}" Foreground="{value["color"]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
+        line = f'{tabulation}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontSize="{value["size"]}" Foreground="{value["color"]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
 
     return line, name, tab, fill, color_group
 
 
 def getGroup(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
 
-    prefixe = "".join(["\t"] * tab)
+    tabulation = "".join(["\t"] * tab)
 
     if "fill" in line:
         line, name, fill, _ = setColors(line=line, name=name, fill=fill)
@@ -126,9 +127,9 @@ def getGroup(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: st
 
     if "id" in line:
         name_calque = line.split('"')[1]
-        line = f"{prefixe}<Canvas Name=\"{name_calque}\">"
+        line = f"{tabulation}<Canvas Name=\"{name_calque}\">"
     else:
-        line = f"{prefixe}<Canvas Name=\"{geom[-1]}{name[geom]}\">"
+        line = f"{tabulation}<Canvas Name=\"{geom[-1]}{name[geom]}\">"
         name[geom] += 1
 
     tab += 1
