@@ -19,7 +19,7 @@ def getGeom(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
             line, name, tab, fill, color_group = getPolygon(line=line, name=name, tab=tab, fill=fill, geom=geom, color_group=color_group)
         case "<text":
             line, name, tab, fill, color_group = getText(line=line, name=name, tab=tab, fill=fill, geom=geom, color_group=color_group)
-        case "<circle":
+        case "<circle" | "<ellipse":
             line, name, tab, fill, color_group = getEllipse(line=line, name=name, tab=tab, fill=fill, geom=geom, color_group=color_group)
 
     return line, name, tab, fill, color_group
@@ -59,13 +59,17 @@ def getEllipse(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: 
     tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill, color_group=color_group)
     tabulation = "".join(["\t"] * tab)
 
-    tmp["Width"] = f'{float(tmp["r"]) * 2}'
-    tmp["Height"] = f'{float(tmp["r"]) * 2}'
+    if "r" in list(tmp):
+        tmp["Width"] = f'{float(tmp["r"]) * 2}'
+        tmp["Height"] = f'{float(tmp["r"]) * 2}'
+    else:
+        tmp["Width"] = f'{float(tmp["rx"]) * 2}'
+        tmp["Height"] = f'{float(tmp["ry"]) * 2}'
 
     'Canvas.Left="0" Canvas.Top="0"'
 
     line = f'{tabulation}<Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="0" Canvas.Top="0" Width="{tmp["Width"]}" Height="{tmp["Height"]}"'
-    line = f'{line} Fill="{fill[list(fill)[-1]]["color"]}"/>' if color_group else f'{line} Fill="{fill[tmp["class"]]["color"]}"/>' if "fill" in line else f'{line} Fill="#FF000000"/>'
+    line = f'{line} Fill="{fill[list(fill)[-1]]["color"]}"/>' if color_group else f'{line} Fill="{fill[tmp["class"]]["color"]}"/>' if "fill" in line else f'{line} Fill="#FFFFFFFF"/>'
 
     return line, name, tab, fill, color_group
 
@@ -307,7 +311,7 @@ def getDict(path: str):
         elif "<style" in line:
             fill = getStyle(line)
 
-        if balise_geom := next((x for x in ["<g", "<path", "<rect", "<polygon", "<text", "<circle"] if x in line), False):
+        if balise_geom := next((x for x in ["<g", "<path", "<rect", "<polygon", "<text", "<circle", "<ellipse"] if x in line), False):
             line, name, tab, fill, color_group = getGeom(line=line, name=name, tab=tab, fill=fill, geom=balise_geom, color_group=color_group)
             xaml.append(line)
 

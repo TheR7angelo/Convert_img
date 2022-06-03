@@ -1,124 +1,25 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!-- Generator: Adobe Illustrator 26.3.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-
-<svg
-   version="1.1"
-   id="Capa_1"
-   sodipodi:docname="linkedin_logo_2.svg"
-   inkscape:version="1.2 (dc2aedaf03, 2022-05-15)"
-   x="0px"
-   y="0px"
-   viewBox="0 0 512 512"
-   style="enable-background:new 0 0 512 512;"
-   xml:space="preserve"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg"><defs
-   id="defs436" />
-<style
-   type="text/css"
-   id="style408">
-	.st0{fill:#00FF00;}
+<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#00CB00;}
 </style>
-<sodipodi:namedview
-   bordercolor="#000000"
-   borderopacity="0.25"
-   id="namedview350"
-   inkscape:current-layer="Capa_1"
-   inkscape:cx="256.30585"
-   inkscape:cy="256.30585"
-   inkscape:deskcolor="#d1d1d1"
-   inkscape:pagecheckerboard="0"
-   inkscape:pageopacity="0.0"
-   inkscape:showpageshadow="2"
-   inkscape:window-height="1017"
-   inkscape:window-maximized="1"
-   inkscape:window-width="1920"
-   inkscape:window-x="1912"
-   inkscape:window-y="-8"
-   inkscape:zoom="1.6347656"
-   pagecolor="#ffffff"
-   showgrid="false">
-	</sodipodi:namedview>
-<g
-   id="g305">
-	<g
-   id="g303">
-		<rect
-   id="rect301"
-   y="160"
-   class="st0"
-   width="114.5"
-   height="352" />
+<g>
+	<g>
+		<rect y="160" class="st0" width="114.5" height="352"/>
 	</g>
 </g>
-<g
-   id="g311">
-	<g
-   id="g309">
-		<path
-   id="path307"
-   class="st0"
-   d="M426.4,164.1c-1.2-0.4-2.4-0.8-3.6-1.2c-1.5-0.4-3.1-0.6-4.6-0.9c-6.1-1.2-12.7-2.1-20.5-2.1    c-66.8,0-109.1,48.5-123,67.3V160H160v352h114.5V320c0,0,86.5-120.5,123-32c0,79,0,224,0,224H512V274.5    C512,221.3,475.6,177,426.4,164.1z" />
+<g>
+	<g>
+		<path class="st0" d="M426.4,164.1c-1.2-0.4-2.4-0.8-3.6-1.2c-1.5-0.4-3.1-0.6-4.6-0.9c-6.1-1.2-12.7-2.1-20.5-2.1
+			c-66.8,0-109.1,48.5-123,67.3V160H160v352h114.5V320c0,0,86.5-120.5,123-32c0,79,0,224,0,224H512V274.5
+			C512,221.3,475.6,177,426.4,164.1z"/>
 	</g>
 </g>
-<g
-   id="g317"
-   transform="matrix(1.2785458,0,0,1.1529271,123.21556,26.915173)">
-	<g
-   id="g315">
-		<circle
-   id="circle313"
-   class="st0"
-   cx="200"
-   cy="56"
-   r="15" />
+<g>
+	<g>
+		<ellipse class="st0" cx="216" cy="117" rx="56" ry="31"/>
 	</g>
-</g>
-<g
-   id="g319">
-</g>
-<g
-   id="g321">
-</g>
-<g
-   id="g323">
-</g>
-<g
-   id="g325">
-</g>
-<g
-   id="g327">
-</g>
-<g
-   id="g329">
-</g>
-<g
-   id="g331">
-</g>
-<g
-   id="g333">
-</g>
-<g
-   id="g335">
-</g>
-<g
-   id="g337">
-</g>
-<g
-   id="g339">
-</g>
-<g
-   id="g341">
-</g>
-<g
-   id="g343">
-</g>
-<g
-   id="g345">
-</g>
-<g
-   id="g347">
 </g>
 </svg>
