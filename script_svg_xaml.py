@@ -261,16 +261,31 @@ def setColors(line: str, name: defaultdict, fill: defaultdict):
 
 def setRessource(xaml: list, brush: defaultdict):
 
-    start = "<Canvas.Resources>"
-    end = "</Canvas.Resources>"
+    start = "\t<Canvas.Resources>"
+    tab = "\t\t"
+    end = "\t</Canvas.Resources>"
 
-    line = [start]
+    resource = list(xaml[:3])
+    xaml = xaml[3:]
 
+    resource.append(start)
 
+    txt = None
+    for key in brush:
+        for sub_key, value in brush[key].items():
+            match sub_key:
+                case "SolidColorBrush":
+                    txt = f"{tab}<SolidColorBrush xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" x:Key=\"{key}\" Color=\"{value}\"/>"
+            if txt is not None:
+                resource.append(txt)
+                txt = None
 
-    line.append(end)
+    resource.append(end)
 
-    return line
+    for row in xaml:
+        resource.append(row)
+
+    return resource
 
 
 def getFiles(path: str, ext="svg"):
