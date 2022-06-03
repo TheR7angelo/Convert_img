@@ -32,7 +32,7 @@ def getPath(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
     tabulation = "".join(["\t"] * tab)
 
     row = f'{tabulation}<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path{name[geom]}"'
-    row = f'{row} Fill="{fill[list(fill)[-1]]["color"]}"' if color_group else f'{row} Fill="{fill[tmp["class"]]["color"]}"' if "fill" in line else f'{row} Fill="#FF000000"'
+    row = f'{row} Fill="{fill[list(fill)[-1]]["SolidColorBrush"]}"' if color_group else f'{row} Fill="{fill[tmp["class"]]["SolidColorBrush"]}"' if "fill" in line else f'{row} Fill="#FF000000"'
     row = f'{row} Data="{tmp["d"]}"/>'
 
     return row, name, tab, fill, color_group
@@ -168,7 +168,7 @@ def getStyle(line: str):
 
             for row in rows:
                 if "#" in row and not next((x for x in ["width", "miterlimit"] if x in row), False):
-                    sub_key = "color"
+                    sub_key = "SolidColorBrush"
                     color = row.replace("#", "").split(":")[1]
                     if len(color) == 3:  # color mode CSS
                         color = "".join([char * 2 for char in color])
@@ -259,6 +259,20 @@ def setColors(line: str, name: defaultdict, fill: defaultdict):
     return line, name, fill, row
 
 
+def setRessource(xaml: list, brush: defaultdict):
+
+    start = "<Canvas.Resources>"
+    end = "</Canvas.Resources>"
+
+    line = [start]
+
+
+
+    line.append(end)
+
+    return line
+
+
 def getFiles(path: str, ext="svg"):
     return glob.glob(f"{os.path.abspath(path)}/**/*.{ext}", recursive=True)
 
@@ -318,6 +332,8 @@ def getDict(path: str):
             xaml.append(line)
 
         start = index
+
+    xaml = setRessource(xaml=xaml, brush=fill)
 
     return "\n".join(xaml)
 
