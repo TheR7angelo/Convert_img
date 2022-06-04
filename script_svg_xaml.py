@@ -158,7 +158,7 @@ def getGroup(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: st
     tabulation = "".join(["\t"] * tab)
 
     if "fill" in line:
-        line, name, fill, _ = setColors(line=line, name=name, fill=fill)
+        line, name, fill, _, _ = setColors(line=line, name=name, fill=fill)
         color_group = True
 
     if "id" in line:
