@@ -1,26 +1,32 @@
 import sqlite3
+import os
 
 
 class database:
 
-    def __init__(self):
-        base = "data.sqlite"
-        self.conn = sqlite3.connect(base)
+    def __init__(self, file="data.sqlite"):
+
+        self.base = file
+
+        self.conn = sqlite3.connect(file)
         self.conn.row_factory = self.dict_factory
         self.cursor = self.conn.cursor()
 
     def dict_factory(self, cursor, row):
         return {col[0]: row[idx] for idx, col in enumerate(cursor.description)}
 
-    def close(self):
-        self.cursor.close()
-        self.conn.close()
-
     def commit(self):
         self.conn.commit()
 
     def execute(self, cmd: str):
         return self.cursor.execute(cmd)
+
+    def close(self):
+        self.cursor.close()
+        self.conn.close()
+
+    def delete(self):
+        os.remove(self.base)
 
     def read_all(self, table: str):
         return self.execute(f"SELECT * FROM {table}").fetchall()

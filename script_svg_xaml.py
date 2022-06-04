@@ -8,8 +8,7 @@ from collections import defaultdict
 from script_svg_xaml_sql import database
 
 
-connector = database()
-connector.create_table_style_tmp()
+connector = database(file="tmp_style.sqlite")
 
 def getGeom(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
 
@@ -397,6 +396,8 @@ def getDict(path: str):
 
 if __name__ == '__main__':
 
+    table = connector.create_table_style_tmp()
+
     for file in getFiles(path="test", ext="svg"):
 
         truc = getDict(path=file)
@@ -404,10 +405,12 @@ if __name__ == '__main__':
         directory, name = os.path.split(file)
         name = f'{name.split(".")[0]}_tmp'
 
-
-
         with open(f"{directory}/{name}.xaml", "w", encoding='utf-8') as output:
             output.write(truc)
 
-        print(truc)
+        # connector.reset_table(table)
+
+        # print(truc)
+
+    # connector.delete_table(table)
 
