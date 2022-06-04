@@ -300,31 +300,26 @@ def setColors(line: str, name: defaultdict, fill: defaultdict):
     return line, name, fill, row, st
 
 
-def setRessource(xaml: list, brush: defaultdict):
+def setRessource(xaml: list):
 
     start = "\t<Canvas.Resources>"
     tab = "\t\t"
     end = "\t</Canvas.Resources>"
 
     resource = list(xaml[:3])
-    xaml = xaml[3:]
 
     resource.append(start)
 
-    txt = None
-    for key in brush:
-        for sub_key, value in brush[key].items():
-            match sub_key:
-                case "SolidColorBrush":
-                    txt = f"{tab}<SolidColorBrush xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" x:Key=\"{key}\" Color=\"{value}\"/>"
-            if txt is not None:
-                resource.append(txt)
-                txt = None
+    style = connector.read_all(table="t_tmp_style")
 
+    for row in style:
+        match row["type"]:
+            case "SolidColorBrush":
+                txt = f'{tab}<{row["type"]} xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="{row["class"]}" Color="{row["value"]}"/>'
+        resource.append(txt)
     resource.append(end)
 
-    for row in xaml:
-        resource.append(row)
+    resource += xaml[3:]
 
     return resource
 
@@ -334,7 +329,7 @@ def getFiles(path: str, ext: str):
 
 
 def getFileData(path: str):
-    print(path)
+    # print(path)
     with open(path, "r", encoding="UTF-8") as file:
         return file.read()
 
@@ -389,7 +384,7 @@ def getDict(path: str):
 
         start = index
 
-    xaml = setRessource(xaml=xaml, brush=fill)
+    xaml = setRessource(xaml=xaml)
 
     return "\n".join(xaml)
 
