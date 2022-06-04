@@ -48,12 +48,15 @@ class database:
     def insert_style(self, key: str, value: str, table="t_tmp_style", key_name="class", value_name="value"):
         cmd = f"INSERT INTO {table}({key_name}, {value_name}) VALUES ('{key}', '{value}')"
         self.execute(cmd)
-        self.commit()
+
+    def find_value(self, key_name: str, value: str, table="t_tmp_style"):
+        cmd = f"SELECT * FROM {table} WHERE {key_name}='{value}';"
+        return self.execute(cmd).fetchall()
 
 
 if __name__ == '__main__':
     connector = database()
 
     # table = connector.create_table_style_tmp()
-    connector.insert_style("st0", "salut")
-    connector.delete_table(table="t_tmp_style")
+    # connector.insert_style("st0", "salut")
+    # connector.delete_table(table="t_tmp_style")

@@ -5,6 +5,11 @@ import glob
 
 from collections import defaultdict
 
+from script_svg_xaml_sql import database
+
+
+connector = database()
+connector.create_table_style_tmp()
 
 def getGeom(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
 
@@ -34,6 +39,25 @@ def getPath(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
     row = f'{tabulation}<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path{name[geom]}"'
     row = f'{row} Fill="{fill[list(fill)[-1]]["SolidColorBrush"]}"' if color_group else f'{row} Fill="{fill[tmp["class"]]["SolidColorBrush"]}"' if "fill" in line else f'{row} Fill="#FF000000"'
     row = f'{row} Data="{tmp["d"]}"/>'
+
+    # """Fill="{StaticResource a}""""
+
+    if color_group:
+        row = f'{row} Fill="{fill[list(fill)[-1]]["SolidColorBrush"]}"'
+    elif "fill" in line:
+        st = line.split("#")[1].split(";")[0]
+        if len(st) ==6:
+            st = f"#FF{st}"
+        for key in fill:
+            if fill[key]["SolidColorBrush"] == st:
+                st = f'{{StaticResource {key}}}'
+                break
+        row = f'{row} Fill="{st}"'
+    else:
+        row = f'{row} Fill="#FF000000"'
+
+    row = f'{row} Data="{tmp["d"]}"/>'
+
 
     return row, name, tab, fill, color_group
 
@@ -205,11 +229,9 @@ def getValue(line: str, name: defaultdict, geom: str, fill: defaultdict, color_g
     for row in line:
         if "style" in row or "fill" in row:
 
-            _, name, fill, row = setColors(line=row, name=name, fill=fill)
+            _, name, fill, row, st = setColors(line=row, name=name, fill=fill)
 
-            text = "st"
-
-            row = f"class=st{name[text]-1}"
+            row = f"class={st}"
 
         row = row.replace('"', "")
         row = row.split("=")
@@ -247,16 +269,30 @@ def getParams(line: str, name: defaultdict):
 
 
 def setColors(line: str, name: defaultdict, fill: defaultdict):
-    text = "st"
+
     index = line.find("fill")
     row = line[index:].replace(":", "=").replace('"', '').replace(">", "").split("=")
-    row = f".{text}{name[text]}{{fill:{row[1]};}}"
+
+    color = row[1].replace("#", "").replace(";", "")
+    color = f"#FF{color}" if len(color) == 6 else f"#{color}"
+
+    if base_style:= connector.find_value(key_name="value", value=color):
+        st = base_style[0]["class"]
+    else:
+        text = "st"
+        st = f"{text}{name[text]}"
+        connector.insert_style(key=st, value=color)
+        connector.commit()
+
+
+    row = f".{st}{{fill:{row[1]};}}"
+
 
     fill = getStyle(row) if fill is None else fill | getStyle(row)
 
     name[text] += 1
 
-    return line, name, fill, row
+    return line, name, fill, row, st
 
 
 def setRessource(xaml: list, brush: defaultdict):
@@ -367,3 +403,4 @@ if __name__ == '__main__':
             output.write(truc)
 
         print(truc)
+
