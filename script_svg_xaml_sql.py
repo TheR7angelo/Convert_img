@@ -30,6 +30,7 @@ class database:
 
         cmd = f"""CREATE TABLE {table}(id INTEGER PRIMARY KEY AUTOINCREMENT,
                                             class TEXT NOT NULL,
+                                            type TEXT NOT NULL,
                                             value TEXT NOT NULL);"""
         self.execute(cmd)
 
@@ -45,8 +46,8 @@ class database:
             self.execute(cmd)
         self.commit()
 
-    def insert_style(self, key: str, value: str, table="t_tmp_style", key_name="class", value_name="value"):
-        cmd = f"INSERT INTO {table}({key_name}, {value_name}) VALUES ('{key}', '{value}')"
+    def insert_style(self, key: str, type_value: str, value: str, table="t_tmp_style", key_name="class", type_name="type", value_name="value"):
+        cmd = f"INSERT INTO {table}({key_name}, {type_name}, {value_name}) VALUES ('{key}', '{type_value}','{value}')"
         self.execute(cmd)
 
     def find_value(self, key_name: str, value: str, table="t_tmp_style"):

@@ -37,26 +37,33 @@ def getPath(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
     tabulation = "".join(["\t"] * tab)
 
     row = f'{tabulation}<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path{name[geom]}"'
-    row = f'{row} Fill="{fill[list(fill)[-1]]["SolidColorBrush"]}"' if color_group else f'{row} Fill="{fill[tmp["class"]]["SolidColorBrush"]}"' if "fill" in line else f'{row} Fill="#FF000000"'
-    row = f'{row} Data="{tmp["d"]}"/>'
-
-    # """Fill="{StaticResource a}""""
 
     if color_group:
         row = f'{row} Fill="{fill[list(fill)[-1]]["SolidColorBrush"]}"'
     elif "fill" in line:
-        st = line.split("#")[1].split(";")[0]
-        if len(st) ==6:
-            st = f"#FF{st}"
-        for key in fill:
-            if fill[key]["SolidColorBrush"] == st:
-                st = f'{{StaticResource {key}}}'
-                break
-        row = f'{row} Fill="{st}"'
+        row = f'{row} Fill="{{StaticResource {tmp["class"]}}}"'
     else:
         row = f'{row} Fill="#FF000000"'
 
     row = f'{row} Data="{tmp["d"]}"/>'
+
+    # """Fill="{StaticResource a}""""
+
+    # if color_group:
+    #     row = f'{row} Fill="{fill[list(fill)[-1]]["SolidColorBrush"]}"'
+    # elif "fill" in line:
+    #     st = line.split("#")[1].split(";")[0]
+    #     if len(st) ==6:
+    #         st = f"#FF{st}"
+    #     for key in fill:
+    #         if fill[key]["SolidColorBrush"] == st:
+    #             st = f'{{StaticResource {key}}}'
+    #             break
+    #     row = f'{row} Fill="{st}"'
+    # else:
+    #     row = f'{row} Fill="#FF000000"'
+
+    # row = f'{row} Data="{tmp["d"]}"/>'
 
 
     return row, name, tab, fill, color_group
@@ -281,7 +288,8 @@ def setColors(line: str, name: defaultdict, fill: defaultdict):
     else:
         text = "st"
         st = f"{text}{name[text]}"
-        connector.insert_style(key=st, value=color)
+        name[text] += 1
+        connector.insert_style(key=st, type_value="SolidColorBrush", value=color)
         connector.commit()
 
 
@@ -289,8 +297,6 @@ def setColors(line: str, name: defaultdict, fill: defaultdict):
 
 
     fill = getStyle(row) if fill is None else fill | getStyle(row)
-
-    name[text] += 1
 
     return line, name, fill, row, st
 
@@ -324,7 +330,7 @@ def setRessource(xaml: list, brush: defaultdict):
     return resource
 
 
-def getFiles(path: str, ext="svg"):
+def getFiles(path: str, ext: str):
     return glob.glob(f"{os.path.abspath(path)}/**/*.{ext}", recursive=True)
 
 
@@ -391,7 +397,8 @@ def getDict(path: str):
 
 if __name__ == '__main__':
 
-    for file in getFiles(path="test"):
+    for file in getFiles(path="test", ext="svg"):
+
         truc = getDict(path=file)
 
         directory, name = os.path.split(file)
