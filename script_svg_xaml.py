@@ -14,9 +14,25 @@ class svg_xaml:
         self.connector = database(file="tmp_style.sqlite")
         self.name = defaultdict(lambda: 0)
         self.tabulation = 0
-        self.fill = None
         self.xaml = []
         self.color_group = ""
+
+    def setPolygon(self, line: str, geom: str):
+        tmp = self.getValue(line=line, geom=geom)
+        tabulation = "".join(["\t"] * self.tabulation)
+
+        row = f'{tabulation}<Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Polygon{self.name[geom]}" FillRule="NonZero"'
+
+        if self.color_group:
+            row = f'{row} Fill="{{StaticResource {self.color_group}}}"'
+        elif "fill" in line:
+            row = f'{row} Fill="{{StaticResource {tmp["class"]}}}"'
+        else:
+            row = f'{line} Fill="#FF000000"'
+
+        row = f'{row} Points="{tmp["points"]}"/>'
+
+        self.xaml.append(row)
 
     def setPath(self, line: str, geom: str):
         tmp = self.getValue(line=line, geom=geom)
@@ -27,7 +43,7 @@ class svg_xaml:
 
         if self.color_group:
             row = f'{row} Fill="{{StaticResource {self.color_group}}}"'
-        elif "fill" in line:
+        elif "fill" in line or "class" in line:
             row = f'{row} Fill="{{StaticResource {tmp["class"]}}}"'
         else:
             row = f'{row} Fill="#FF000000"'
@@ -63,15 +79,15 @@ class svg_xaml:
             # case "<rect":
             #     line, name, tab, fill, color_group = getRect(line=line, name=name, tab=tab, fill=fill, geom=geom,
             #                                                  color_group=color_group)
-            # case "<polygon":
-            #     line, name, tab, fill, color_group = getPolygon(line=line, name=name, tab=tab, fill=fill, geom=geom,
-            #                                                     color_group=color_group)
+            case "<polygon":
+                self.setPolygon(line=line, geom=geom)
             # case "<text":
             #     line, name, tab, fill, color_group = getText(line=line, name=name, tab=tab, fill=fill, geom=geom,
             #                                                  color_group=color_group)
             # case "<circle" | "<ellipse":
             #     line, name, tab, fill, color_group = getEllipse(line=line, name=name, tab=tab, fill=fill, geom=geom,
             #                                                     color_group=color_group)
+        self.name[geom] += 1
 
     def setStyle(self, line: str):
         lines = line.split("\t")
@@ -87,13 +103,7 @@ class svg_xaml:
 
                 for row in rows:
                     if "#" in row and not next((x for x in ["width", "miterlimit"] if x in row), False):
-                        sub_key = "SolidColorBrush"
-                        color = row.replace("#", "").split(":")[1]
-                        if len(color) == 3:  # color mode CSS
-                            color = "".join([char * 2 for char in color])
-
-                        value = f"#FF{color}" if len(color) == 6 else f"#{color}"
-                        value = value.upper()
+                        self.setColor(line=row)
 
                     elif "width" in row:
                         sub_key = "epaisseur"
@@ -108,7 +118,7 @@ class svg_xaml:
                         value = row.split(":")[1]
                     else:
                         continue
-                    tmp[sub_key] = value
+                    # tmp[sub_key] = value
 
                     # if not (base_style := connector.find_value(key_name="value", value=color)):
                     #     text = "st"
@@ -117,9 +127,9 @@ class svg_xaml:
                     #     connector.insert_style(key=st, type_value="SolidColorBrush", value=color)
                     #     connector.commit()
 
-                    self.connector.insert_style(key=key, type_value=sub_key, value=value)
+                    # self.connector.insert_style(key=key, type_value=sub_key, value=value)
 
-                self.fill[key] = tmp.copy()
+                # self.fill[key] = tmp.copy()
 
     def setColor(self, line: str):
         index = line.find("fill")
@@ -142,10 +152,6 @@ class svg_xaml:
             self.connector.insert_style(key=st, type_value="SolidColorBrush", value=color)
             self.connector.commit()
 
-        # row = f".{st}{{fill:{color};}}"
-
-        # fill = getStyle(row) if fill is None else fill | getStyle(row)
-
         return st
 
     def getValue(self, line: str, geom: str):
@@ -166,8 +172,6 @@ class svg_xaml:
             row = row.replace('"', "")
             row = row.split("=")
             tmp[row[0]] = row[1]
-
-        self.name[geom] += 1
 
         return tmp
 
@@ -272,6 +276,15 @@ class svg_xaml:
     def getFiles(self, path: str, ext: str):
         return glob.glob(f"{os.path.abspath(path)}/**/*.{ext}", recursive=True)
 
+    def reset(self):
+        self.connector.reset_table(self.table)
+
+        self.name.clear()
+        self.tabulation = 0
+        self.fill = None
+        self.xaml = []
+        self.color_group = ""
+
     def convertDir(self, directory):
         self.table = self.connector.create_table_style_tmp()
 
@@ -284,7 +297,7 @@ class svg_xaml:
             with open(f"{path}/{file_name}.xaml", "w", encoding='utf-8') as output:
                 output.write(truc)
 
-            # self.connector.reset_table(self.table)
+            # self.reset()
 
 
 if __name__ == '__main__':

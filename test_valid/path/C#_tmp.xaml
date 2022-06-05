@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Python 3.10, SVG Convert XAML . SVG Version: 6.00 Build 0)  -->
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Name="Calque_1" Canvas.Left="0" Canvas.Top="0" Width="512" Height="512">
+	<Canvas.Resources>
+		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st0" Color="#FF9A4993"/>
+		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st1" Color="#FF6A1577"/>
+		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st2" Color="#FF813084"/>
+		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st3" Color="#FFFFFFFF"/>
+	</Canvas.Resources>
+	<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path0" Fill="{StaticResource st0}" Data="M487.5,151c0-8.5-1.8-16.2-5.6-22.7c-3.6-6.4-9.1-11.8-16.4-16C405,77.5,344.4,42.6,283.9,7.8  c-16.4-9.4-32.1-9.1-48.3,0.4C211.5,22.3,90.8,91.5,55,112.4c-14.8,8.5-22,21.7-22,38.8v210.6c0,8.4,1.8,15.8,5.3,22.3  c3.6,6.6,9.2,12.2,16.7,16.5c36,20.9,156.5,89.9,180.6,104.2c16.2,9.5,32.1,9.9,48.3,0.4c60.5-35,121.1-69.7,181.6-104.6  c7.6-4.3,13-9.8,16.7-16.5c3.5-6.4,5.3-13.9,5.3-22.3L487.5,151z"/>
+	<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path1" Fill="{StaticResource st1}" Data="M260.8,255.6L38.1,383.8c3.6,6.6,9.2,12.2,16.7,16.5c36,20.9,156.5,89.9,180.6,104.2  c16.2,9.5,32.1,9.9,48.3,0.4c60.5-35,121.1-69.7,181.6-104.6c7.6-4.3,13-9.8,16.7-16.5L260.8,255.6z"/>
+	<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path2" Fill="{StaticResource st1}" Data="M194.9,293.5c13,22.7,37.4,37.9,65.2,37.9c28.1,0,52.6-15.4,65.5-38.4l-64.8-37.5L194.9,293.5z"/>
+	<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path3" Fill="{StaticResource st2}" Data="M487.5,151c0-8.5-1.8-16.2-5.6-22.7L260.8,255.6l221.3,128.2c3.5-6.4,5.3-13.9,5.3-22.3V151z"/>
+	<Canvas Name="g0">
+		<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path4" Fill="{StaticResource st3}" Data="M325.6,293.1c-12.9,22.8-37.4,38.4-65.5,38.4c-28,0-52.4-15.3-65.2-37.9c-6.3-11.1-9.9-23.7-9.9-37.2   c0-41.6,33.6-75.2,75.2-75.2c27.7,0,51.9,15.1,65,37.5l65.7-37.8c-26.2-45.1-74.9-75.5-130.8-75.5C176.5,105.4,109,173,109,256.3   c0,27.3,7.3,53.1,20,75.2c26,45.2,75,75.7,131,75.7c56.1,0,105.1-30.7,131.2-76.2L325.6,293.1z M408.6,220.6h-15V293h15V220.6z    M441.8,220.6h-15V293h15V220.6z"/>
+		<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path5" Fill="{StaticResource st3}" Data="M454,232.8h-72.4v15H454L454,232.8z M454,265.8h-72.4v15H454L454,265.8z"/>
+	</Canvas>
+</Canvas>
