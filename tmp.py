@@ -86,25 +86,25 @@ connector = database(file="tmp_style.sqlite")
 #     return row, name, tab, fill, color_group
 
 
-def getEllipse(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
-    tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill, color_group=color_group)
-    tabulation = "".join(["\t"] * tab)
-
-    if "r" in list(tmp):
-        tmp["Width"] = f'{float(tmp["r"]) * 2}'
-        tmp["Height"] = f'{float(tmp["r"]) * 2}'
-        tmp["left"] = f'{float(tmp["cx"]) - float(tmp["r"])}'
-        tmp["top"] = f'{float(tmp["cy"]) - float(tmp["r"])}'
-    else:
-        tmp["Width"] = f'{float(tmp["rx"]) * 2}'
-        tmp["Height"] = f'{float(tmp["ry"]) * 2}'
-        tmp["left"] = f'{float(tmp["cx"]) - float(tmp["rx"])}'
-        tmp["top"] = f'{float(tmp["cy"]) - float(tmp["ry"])}'
-
-    line = f'{tabulation}<Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{tmp["left"]}" Canvas.Top="{tmp["top"]}" Width="{tmp["Width"]}" Height="{tmp["Height"]}"'
-    line = f'{line} Fill="{fill[list(fill)[-1]]["color"]}"/>' if color_group else f'{line} Fill="{fill[tmp["class"]]["color"]}"/>' if "fill" in line else f'{line} Fill="#FF000000"/>'
-
-    return line, name, tab, fill, color_group
+# def getEllipse(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
+#     tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill, color_group=color_group)
+#     tabulation = "".join(["\t"] * tab)
+#
+#     if "r" in list(tmp):
+#         tmp["Width"] = f'{float(tmp["r"]) * 2}'
+#         tmp["Height"] = f'{float(tmp["r"]) * 2}'
+#         tmp["left"] = f'{float(tmp["cx"]) - float(tmp["r"])}'
+#         tmp["top"] = f'{float(tmp["cy"]) - float(tmp["r"])}'
+#     else:
+#         tmp["Width"] = f'{float(tmp["rx"]) * 2}'
+#         tmp["Height"] = f'{float(tmp["ry"]) * 2}'
+#         tmp["left"] = f'{float(tmp["cx"]) - float(tmp["rx"])}'
+#         tmp["top"] = f'{float(tmp["cy"]) - float(tmp["ry"])}'
+#
+#     line = f'{tabulation}<Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{tmp["left"]}" Canvas.Top="{tmp["top"]}" Width="{tmp["Width"]}" Height="{tmp["Height"]}"'
+#     line = f'{line} Fill="{fill[list(fill)[-1]]["color"]}"/>' if color_group else f'{line} Fill="{fill[tmp["class"]]["color"]}"/>' if "fill" in line else f'{line} Fill="#FF000000"/>'
+#
+#     return line, name, tab, fill, color_group
 
 
 # def getPolygon(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
@@ -117,40 +117,40 @@ def getEllipse(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: 
 #     return line, name, tab, fill, color_group
 
 
-def getText(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
-    tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill, color_group=color_group)
-    tabulation = "".join(["\t"] * tab)
-
-    matrix = tmp['transform'].split("(")[1].split(")")[0].split(" ")
-    matrix = list(map(float, matrix))
-
-    params = tmp["class"].split(" ")
-
-    value = {}
-    for param in params:
-        for key, valeurs in fill[param].items():
-            match key:
-                case "color":
-                    value[key] = valeurs
-                case "font-family":
-                    font = valeurs.replace("'", "").split("-")
-                    value["family"] = getFontFamilly(font[0])
-                    try:
-                        if font[1].lower() == "regular":
-                            font[1] = "Normal"
-                        value["style"] = font[1]
-                    except IndexError:
-                        pass
-                case "font-size":
-                    value["top"] = getFontSize(size=matrix[5], fontSize=valeurs)
-                    value["size"] = valeurs
-
-    try:
-        line = f'{tabulation}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontStyle="{value["style"]}" FontSize="{value["size"]}" Foreground="{value["color"]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
-    except KeyError:
-        line = f'{tabulation}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontSize="{value["size"]}" Foreground="{value["color"]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
-
-    return line, name, tab, fill, color_group
+# def getText(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
+#     tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill, color_group=color_group)
+#     tabulation = "".join(["\t"] * tab)
+#
+#     matrix = tmp['transform'].split("(")[1].split(")")[0].split(" ")
+#     matrix = list(map(float, matrix))
+#
+#     params = tmp["class"].split(" ")
+#
+#     value = {}
+#     for param in params:
+#         for key, valeurs in fill[param].items():
+#             match key:
+#                 case "color":
+#                     value[key] = valeurs
+#                 case "font-family":
+#                     font = valeurs.replace("'", "").split("-")
+#                     value["family"] = getFontFamilly(font[0])
+#                     try:
+#                         if font[1].lower() == "regular":
+#                             font[1] = "Normal"
+#                         value["style"] = font[1]
+#                     except IndexError:
+#                         pass
+#                 case "font-size":
+#                     value["top"] = getFontSize(size=matrix[5], fontSize=valeurs)
+#                     value["size"] = valeurs
+#
+#     try:
+#         line = f'{tabulation}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontStyle="{value["style"]}" FontSize="{value["size"]}" Foreground="{value["color"]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
+#     except KeyError:
+#         line = f'{tabulation}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{value["top"]}" FontFamily="{value["family"]}" FontSize="{value["size"]}" Foreground="{value["color"]}" Name="Text{name["<text"]}">{tmp["value"]}</TextBlock>'
+#
+#     return line, name, tab, fill, color_group
 
 
 # def getGroup(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
@@ -172,13 +172,13 @@ def getText(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str
 #     return line, name, tab, fill, color_group
 
 
-def getFontFamilly(familly: str):
-    familly = familly.split("-")
-    return " ".join(re.findall("[A-Z][^A-Z]*", familly[0]))
-
-
-def getFontSize(size: float, fontSize: str):
-    return size - float(fontSize.replace("px", ""))
+# def getFontFamilly(familly: str):
+#     familly = familly.split("-")
+#     return " ".join(re.findall("[A-Z][^A-Z]*", familly[0]))
+#
+#
+# def getFontSize(size: float, fontSize: str):
+#     return size - float(fontSize.replace("px", ""))
 
 
 # def getStyle(line: str):

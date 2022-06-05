@@ -18,6 +18,32 @@ class svg_xaml:
         self.color_group = ""
         self.table = ""
 
+    def setEllipse(self, line: str, geom: str):
+        tmp = self.getValue(line=line, geom=geom)
+        tabulation = "".join(["\t"] * self.tabulation)
+
+        if "r" in list(tmp):
+            tmp["Width"] = f'{float(tmp["r"]) * 2}'
+            tmp["Height"] = f'{float(tmp["r"]) * 2}'
+            tmp["left"] = f'{float(tmp["cx"]) - float(tmp["r"])}'
+            tmp["top"] = f'{float(tmp["cy"]) - float(tmp["r"])}'
+        else:
+            tmp["Width"] = f'{float(tmp["rx"]) * 2}'
+            tmp["Height"] = f'{float(tmp["ry"]) * 2}'
+            tmp["left"] = f'{float(tmp["cx"]) - float(tmp["rx"])}'
+            tmp["top"] = f'{float(tmp["cy"]) - float(tmp["ry"])}'
+
+        row = f'{tabulation}<Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{tmp["left"]}" Canvas.Top="{tmp["top"]}" Width="{tmp["Width"]}" Height="{tmp["Height"]}"'
+
+        if self.color_group:
+            row = f'{row} Fill="{{StaticResource {self.color_group}}}"/>'
+        elif "fill" in line or "class" in line:
+            row = f'{row} Fill="{{StaticResource {tmp["class"]}}}"/>'
+        else:
+            row = f'{row} Fill="#FF000000"/>'
+
+        self.xaml.append(row)
+
     def getFontSize(self, size: float, fontSize: str):
         return size - float(fontSize.replace("px", ""))
 
@@ -53,10 +79,18 @@ class svg_xaml:
                         style["top"] = self.getFontSize(size=matrix[5], fontSize=row["value"])
                         style["size"] = row["value"]
 
-        if not "fill" in list(style):
-            style["fill"] = "#FF000000"
-
-        row = f'{tabulation}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{style["top"]}" FontFamily="{style["family"]}" FontStyle="{style["style"]}" FontSize="{style["size"]}" Foreground="{style["fill"]}" Name="Text{self.name[geom]}" Text="{tmp["value"]}"/>'
+        row = f'{tabulation}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{style["top"]}"'
+        if "family" in list(style):
+            row = f'{row} FontFamily="{style["family"]}"'
+        if "style" in list(style):
+            row = f'{row} FontStyle="{style["style"]}"'
+        if "size" in list(style):
+            row = f'{row} FontSize="{style["size"]}"'
+        if "fill" in list(style):
+            row = f'{row} Foreground="{style["fill"]}"'
+        if "strokecolor" in list(style):
+            row = f'{row} '
+        row = f'{row} Name="Text{self.name[geom]}" Text="{tmp["value"]}"/>'
 
         self.xaml.append(row)
 
@@ -143,8 +177,8 @@ class svg_xaml:
                 self.setPolygon(line=line, geom=geom)
             case "<text":
                 self.setText(line=line, geom=geom)
-            # case "<circle" | "<ellipse":
-            #     setEllipse(line=line, geom=geom)
+            case "<circle" | "<ellipse":
+                self.setEllipse(line=line, geom=geom)
         self.name[geom] += 1
 
     def setStyle(self, line: str):
@@ -281,13 +315,13 @@ class svg_xaml:
         for row in style:
             match row["type"]:
                 case "SolidColorBrush":
-                    txt = f'{tab}<{row["type"]} xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="{row["class"]}" Color="{row["value"]}"/>'
+                    txt = f'<{row["type"]} xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="{row["class"]}" Color="{row["value"]}"/>'
                 case "font-family":
-                    txt = f'<FontFamily xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="{row["class"]}">{self.getFontFamily(family=row["value"])}<FontFamily/>'
+                    txt = f'<FontFamily xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="{row["class"]}">{self.getFontFamily(family=row["value"])}</FontFamily>'
                 case _:
                     txt = None
             if txt is not None:
-                resource.append(txt)
+                resource.append(f'{tab}{txt}')
         resource.append(end)
 
         resource += self.xaml[idx:]
