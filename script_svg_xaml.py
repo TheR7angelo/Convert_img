@@ -17,6 +17,25 @@ class svg_xaml:
         self.xaml = []
         self.color_group = ""
 
+    def setRect(self, line: str, geom: str):
+        tmp = self.getValue(line=line, geom=geom)
+        tabulation = "".join(["\t"] * self.tabulation)
+
+        for key in ["x", "y"]:
+            if key not in list(tmp):
+                tmp[key] = "0"
+
+        row = f'{tabulation}<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{tmp["x"]}" Canvas.Top="{tmp["y"]}" Width="{tmp["width"]}" Height="{tmp["height"]}" Name="Rect{self.name[geom]}"'
+
+        if self.color_group:
+            row = f'{row} Fill="{{StaticResource {self.color_group}}}"/>'
+        elif "fill" in line:
+            row = f'{row} Fill="{{StaticResource {tmp["class"]}}}"/>'
+        else:
+            row = f'{row} Fill="#FF000000"/>'
+
+        self.xaml.append(row)
+
     def setPolygon(self, line: str, geom: str):
         tmp = self.getValue(line=line, geom=geom)
         tabulation = "".join(["\t"] * self.tabulation)
@@ -76,9 +95,8 @@ class svg_xaml:
                 self.setGroup(line=line, geom=geom)
             case "<path":
                 self.setPath(line=line, geom=geom)
-            # case "<rect":
-            #     line, name, tab, fill, color_group = getRect(line=line, name=name, tab=tab, fill=fill, geom=geom,
-            #                                                  color_group=color_group)
+            case "<rect":
+                self.setRect(line=line, geom=geom)
             case "<polygon":
                 self.setPolygon(line=line, geom=geom)
             # case "<text":
@@ -208,7 +226,9 @@ class svg_xaml:
         tab = "\t\t"
         end = "\t</Canvas.Resources>"
 
-        resource = list(self.xaml[:3])
+        idx = [idx for idx, s in enumerate(self.xaml) if "\t" in s][0]
+
+        resource = list(self.xaml[:idx])
 
         resource.append(start)
 
@@ -221,7 +241,7 @@ class svg_xaml:
             resource.append(txt)
         resource.append(end)
 
-        resource += self.xaml[3:]
+        resource += self.xaml[idx:]
 
         self.xaml = resource
 
@@ -297,7 +317,7 @@ class svg_xaml:
             with open(f"{path}/{file_name}.xaml", "w", encoding='utf-8') as output:
                 output.write(truc)
 
-            # self.reset()
+            self.reset()
 
 
 if __name__ == '__main__':

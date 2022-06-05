@@ -71,19 +71,19 @@ connector = database(file="tmp_style.sqlite")
 #     return row, name, tab, fill
 
 
-def getRect(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
-    tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill, color_group=color_group)
-    tabulation = "".join(["\t"] * tab)
-
-    for key in ["x", "y"]:
-        if key not in list(tmp):
-            tmp[key] = "0"
-
-    row = f'{tabulation}<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{tmp["x"]}" Canvas.Top="{tmp["y"]}" Width="{tmp["width"]}" Height="{tmp["height"]}" Name="Rect{name[geom]}"'
-
-    row = f'{row} Fill="{fill[list(fill)[-1]]["color"]}"/>' if color_group else f'{row} Fill="{fill[tmp["class"]]["color"]}"/>' if "fill" in line else f'{row} Fill="#FF000000"/>'
-
-    return row, name, tab, fill, color_group
+# def getRect(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
+#     tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill, color_group=color_group)
+#     tabulation = "".join(["\t"] * tab)
+#
+#     for key in ["x", "y"]:
+#         if key not in list(tmp):
+#             tmp[key] = "0"
+#
+#     row = f'{tabulation}<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{tmp["x"]}" Canvas.Top="{tmp["y"]}" Width="{tmp["width"]}" Height="{tmp["height"]}" Name="Rect{name[geom]}"'
+#
+#     row = f'{row} Fill="{fill[list(fill)[-1]]["color"]}"/>' if color_group else f'{row} Fill="{fill[tmp["class"]]["color"]}"/>' if "fill" in line else f'{row} Fill="#FF000000"/>'
+#
+#     return row, name, tab, fill, color_group
 
 
 def getEllipse(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
@@ -107,14 +107,14 @@ def getEllipse(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: 
     return line, name, tab, fill, color_group
 
 
-def getPolygon(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
-    tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill, color_group=color_group)
-    tabulation = "".join(["\t"] * tab)
-
-    line = f'{tabulation}<Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="{tmp["points"]}" Name="Polygon{name[geom]}" FillRule="NonZero"'
-    line = f'{line} Fill="{fill[list(fill)[-1]]["color"]}"/>' if color_group else f'{line} Fill="{fill[tmp["class"]]["color"]}"/>' if "fill" in line else f'{line} Fill="#FF000000"/>'
-
-    return line, name, tab, fill, color_group
+# def getPolygon(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
+#     tmp, name, fill = getValue(line=line, name=name, geom=geom, fill=fill, color_group=color_group)
+#     tabulation = "".join(["\t"] * tab)
+#
+#     line = f'{tabulation}<Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="{tmp["points"]}" Name="Polygon{name[geom]}" FillRule="NonZero"'
+#     line = f'{line} Fill="{fill[list(fill)[-1]]["color"]}"/>' if color_group else f'{line} Fill="{fill[tmp["class"]]["color"]}"/>' if "fill" in line else f'{line} Fill="#FF000000"/>'
+#
+#     return line, name, tab, fill, color_group
 
 
 def getText(line: str, name: defaultdict, tab: int, fill: defaultdict, geom: str, color_group: bool):
