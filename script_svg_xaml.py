@@ -228,7 +228,9 @@ class svg_xaml:
         color = f"#FF{color}" if len(color) == 6 else f"#{color}"
         color = color.upper()
 
-        if base_style := self.connector.find_value(key_name="value", value=color) and key is None:
+        base_style = self.connector.find_value(key_name="value", value=color)
+
+        if base_style and key is None:
             st = base_style[0]["class"]
         else:
             text = "st"
@@ -240,7 +242,7 @@ class svg_xaml:
 
                 self.name[text] = int(st.replace(text, "")) + 1
 
-            type_value = "SolidColorBrush" if sub_key == "fill" else "StrokeColorBrush"
+            type_value = "SolidColorBrush" if "fill" in sub_key else "StrokeColorBrush"
 
             self.connector.insert_style(key=st, type_value=type_value, value=color)
             self.connector.commit()
@@ -308,9 +310,7 @@ class svg_xaml:
 
         resource.append(start)
 
-        style = self.connector.read_all(table="t_tmp_style")
-
-        """<FontFamily xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st2" FamilyNames="Calibri"/>"""
+        style = self.connector.read_all(table=self.table)
 
         for row in style:
             match row["type"]:
