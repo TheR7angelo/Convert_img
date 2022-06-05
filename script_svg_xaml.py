@@ -16,6 +16,49 @@ class svg_xaml:
         self.tabulation = 0
         self.xaml = []
         self.color_group = ""
+        self.table = ""
+
+    def getFontSize(self, size: float, fontSize: str):
+        return size - float(fontSize.replace("px", ""))
+
+    def setText(self, line: str, geom: str):
+
+        tmp = self.getValue(line=line, geom=geom)
+        tabulation = "".join(["\t"] * self.tabulation)
+
+        matrix = tmp['transform'].split("(")[1].split(")")[0].split(" ")
+        matrix = list(map(float, matrix))
+
+        params = tmp["class"].split(" ")
+
+        style = {}
+        for param in params:
+            values = self.connector.find_value(key_name="class", value=param)
+            for row in values:
+                match row["type"]:
+                    case "SolidColorBrush":
+                        style["fill"] = f'{{StaticResource {row["class"]}}}'
+                    case "StrokeColorBrush":
+                        style["strokecolor"] = row["value"]
+                    case "stroke-miterlimit":
+                        style["miterlimit"] = row["value"]
+                    case "font-family":
+                        style["family"] = f'{{StaticResource {row["class"]}}}'
+                        try:
+                            value = row["value"].split("-")
+                            style["style"] = value[1]
+                        except IndexError:
+                            pass
+                    case "font-size":
+                        style["top"] = self.getFontSize(size=matrix[5], fontSize=row["value"])
+                        style["size"] = row["value"]
+
+        if not "fill" in list(style):
+            style["fill"] = "#FF000000"
+
+        row = f'{tabulation}<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="{matrix[4]}" Canvas.Top="{style["top"]}" FontFamily="{style["family"]}" FontStyle="{style["style"]}" FontSize="{style["size"]}" Foreground="{style["fill"]}" Name="Text{self.name[geom]}" Text="{tmp["value"]}"/>'
+
+        self.xaml.append(row)
 
     def setRect(self, line: str, geom: str):
         tmp = self.getValue(line=line, geom=geom)
@@ -29,7 +72,7 @@ class svg_xaml:
 
         if self.color_group:
             row = f'{row} Fill="{{StaticResource {self.color_group}}}"/>'
-        elif "fill" in line:
+        elif "fill" in line or "class" in line:
             row = f'{row} Fill="{{StaticResource {tmp["class"]}}}"/>'
         else:
             row = f'{row} Fill="#FF000000"/>'
@@ -44,10 +87,10 @@ class svg_xaml:
 
         if self.color_group:
             row = f'{row} Fill="{{StaticResource {self.color_group}}}"'
-        elif "fill" in line:
+        elif "fill" in line or "class" in line:
             row = f'{row} Fill="{{StaticResource {tmp["class"]}}}"'
         else:
-            row = f'{line} Fill="#FF000000"'
+            row = f'{row} Fill="#FF000000"'
 
         row = f'{row} Points="{tmp["points"]}"/>'
 
@@ -76,7 +119,6 @@ class svg_xaml:
 
         if "fill" in line:
             self.color_group = self.setColor(line=line)
-            # color_group = True
 
         if "id" in line:
             name_calque = line.split('"')[1]
@@ -99,12 +141,10 @@ class svg_xaml:
                 self.setRect(line=line, geom=geom)
             case "<polygon":
                 self.setPolygon(line=line, geom=geom)
-            # case "<text":
-            #     line, name, tab, fill, color_group = getText(line=line, name=name, tab=tab, fill=fill, geom=geom,
-            #                                                  color_group=color_group)
+            case "<text":
+                self.setText(line=line, geom=geom)
             # case "<circle" | "<ellipse":
-            #     line, name, tab, fill, color_group = getEllipse(line=line, name=name, tab=tab, fill=fill, geom=geom,
-            #                                                     color_group=color_group)
+            #     setEllipse(line=line, geom=geom)
         self.name[geom] += 1
 
     def setStyle(self, line: str):
@@ -116,41 +156,34 @@ class svg_xaml:
                 key = row[1:].split("{")[0]
 
                 rows = row.split("{")[1].split(";")
-                tmp = {}
-                sub_key, value = "", ""
 
                 for row in rows:
                     if "#" in row and not next((x for x in ["width", "miterlimit"] if x in row), False):
-                        self.setColor(line=row)
-
-                    elif "width" in row:
-                        sub_key = "epaisseur"
-                        value = row.split(":")[1]
-                    elif "miterlimit" in row:
-                        pass
-                    elif "family" in row:
-                        sub_key = "font-family"
-                        value = row.split(":")[1]
-                    elif "font-size" in row:
-                        sub_key = "font-size"
-                        value = row.split(":")[1]
+                        self.setColor(line=row, key=key)
+                    elif "stroke" in row:
+                        self.setStroke(line=row, key=key)
+                    elif "font" in row:
+                        self.setFont(line=row, key=key)
                     else:
                         continue
-                    # tmp[sub_key] = value
 
-                    # if not (base_style := connector.find_value(key_name="value", value=color)):
-                    #     text = "st"
-                    #     st = f"{text}{name[text]}"
-                    #     name[text] += 1
-                    #     connector.insert_style(key=st, type_value="SolidColorBrush", value=color)
-                    #     connector.commit()
+    def setFont(self, line: str, key: str):
+        row = line.replace(":", "=").replace("'", "").split("=")
+        self.connector.insert_style(key=key, type_value=row[0], value=row[1])
+        self.connector.commit()
 
-                    # self.connector.insert_style(key=key, type_value=sub_key, value=value)
+    def setStroke(self, line: str, key: str):
+        row = line.replace(":", "=").split("=")
 
-                # self.fill[key] = tmp.copy()
+        self.connector.insert_style(key=key, type_value=row[0], value=row[1])
+        self.connector.commit()
 
-    def setColor(self, line: str):
-        index = line.find("fill")
+    def setColor(self, line: str, key=None):
+        sub_key = line.replace(":", "=").split("=")[0]
+        return self.setFill(line=line, sub_key=sub_key, key=key)
+
+    def setFill(self, line: str, sub_key: str, key=None):
+        index = line.find(sub_key)
         row = line[index:].replace(":", "=").replace('"', '').replace(">", "").split("=")
 
         color = row[1].replace("#", "").replace(";", "")
@@ -161,13 +194,21 @@ class svg_xaml:
         color = f"#FF{color}" if len(color) == 6 else f"#{color}"
         color = color.upper()
 
-        if base_style := self.connector.find_value(key_name="value", value=color):
+        if base_style := self.connector.find_value(key_name="value", value=color) and key is None:
             st = base_style[0]["class"]
         else:
             text = "st"
-            st = f"{text}{self.name[text]}"
-            self.name[text] += 1
-            self.connector.insert_style(key=st, type_value="SolidColorBrush", value=color)
+            if key is None:
+                st = f"{text}{self.name[text]}"
+                self.name[text] += 1
+            else:
+                st = key
+
+                self.name[text] = int(st.replace(text, "")) + 1
+
+            type_value = "SolidColorBrush" if sub_key == "fill" else "StrokeColorBrush"
+
+            self.connector.insert_style(key=st, type_value=type_value, value=color)
             self.connector.commit()
 
         return st
@@ -217,16 +258,17 @@ class svg_xaml:
         self.name[geom] += 1
         self.xaml.append(line)
 
-    def getFileData(self, path: str):
-        with open(path, "r", encoding="UTF-8") as file:
-            return file.read()
+    def getFontFamily(self, family: str):
+        family = family.split("-")
+        return " ".join(re.findall("[A-Z][^A-Z]*", family[0]))
 
     def setRessources(self):
+
         start = "\t<Canvas.Resources>"
         tab = "\t\t"
         end = "\t</Canvas.Resources>"
 
-        idx = [idx for idx, s in enumerate(self.xaml) if "\t" in s][0]
+        idx = next((i for i, s in enumerate(self.xaml) if "\t" in s), -1)
 
         resource = list(self.xaml[:idx])
 
@@ -234,16 +276,27 @@ class svg_xaml:
 
         style = self.connector.read_all(table="t_tmp_style")
 
+        """<FontFamily xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st2" FamilyNames="Calibri"/>"""
+
         for row in style:
             match row["type"]:
                 case "SolidColorBrush":
                     txt = f'{tab}<{row["type"]} xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="{row["class"]}" Color="{row["value"]}"/>'
-            resource.append(txt)
+                case "font-family":
+                    txt = f'<FontFamily xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="{row["class"]}">{self.getFontFamily(family=row["value"])}<FontFamily/>'
+                case _:
+                    txt = None
+            if txt is not None:
+                resource.append(txt)
         resource.append(end)
 
         resource += self.xaml[idx:]
 
         self.xaml = resource
+
+    def getFileData(self, path: str):
+        with open(path, "r", encoding="UTF-8") as file:
+            return file.read()
 
     def getXaml(self, path: str):
         svg = self.getFileData(path=path)
@@ -301,7 +354,6 @@ class svg_xaml:
 
         self.name.clear()
         self.tabulation = 0
-        self.fill = None
         self.xaml = []
         self.color_group = ""
 

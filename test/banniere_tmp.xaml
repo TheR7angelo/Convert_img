@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Python 3.10, SVG Convert XAML . SVG Version: 6.00 Build 0)  -->
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Name="tmp" Canvas.Left="0" Canvas.Top="0" Width="862.4" Height="238">
+	<Canvas.Resources>
+		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st0" Color="#FFFFFFFF"/>
+		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st1" Color="#FFF18714"/>
+		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st2" Color="#FFFFFFFF"/>
+<FontFamily xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st3">Lucida Calligraphy<FontFamily/>
+	</Canvas.Resources>
+	<Canvas Name="Calque_3">
+		<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="0" Canvas.Top="0" Width="862.4" Height="238" Name="Rect0" Fill="{StaticResource st0}"/>
+	</Canvas>
+	<Canvas Name="Calque_1_00000136406445972492385130000006098816901012748172_">
+		<Canvas Name="g2">
+			<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="17" Canvas.Top="6" Width="840.4" Height="141.2" Name="Rect1" Fill="{StaticResource st1}"/>
+			<Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Polygon0" FillRule="NonZero" Fill="{StaticResource st1}" Points="11,161.4 4,161.4 4,6 11,6 11,154.3 858.4,154.3 858.4,161.4   "/>
+		</Canvas>
+		<Canvas Name="g4">
+			<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="4" Canvas.Top="178.4" Width="7" Height="42.4" Name="Rect2" Fill="{StaticResource st1}"/>
+			<Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="851.4" Canvas.Top="178.4" Width="7" Height="42.4" Name="Rect3" Fill="{StaticResource st1}"/>
+		</Canvas>
+	</Canvas>
+	<Canvas Name="Calque_2_00000168833045407797480790000009674397716490115217_">
+		<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="59.8613" Canvas.Top="2.5412000000000035" FontFamily="{StaticResource st3}" FontStyle="Italic" FontSize="106.2303px" Foreground="{StaticResource st2}" Name="Text0" Text="TheR7angelo"/>
+		<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="250.5181" Canvas.Top="164.3538" FontFamily="{StaticResource st3}" FontStyle="Italic" FontSize="51.5061px" Foreground="#FF000000" Name="Text1" Text="Développeur"/>
+	</Canvas>
+</Canvas>
