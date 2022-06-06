@@ -18,6 +18,24 @@ class svg_2_xaml:
         self.color_group = ""
         self.table = ""
 
+    def setLine(self, line: str, geom: str):
+        tmp = self.getValue(line=line, geom=geom)
+
+        tabulation = "".join(["\t"] * self.tabulation)
+
+        row = f'{tabulation}<Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Line{self.name["geom"]}"'
+
+        if self.color_group:
+            row = f'{row} Fill="{{StaticResource {self.color_group}}}"'
+        elif "fill" in line or "class" in line:
+            row = f'{row} Fill="{{StaticResource {tmp["class"]}}}"'
+        else:
+            row = f'{row} Fill="{{StaticResource fill_black}}"'
+
+        row = f'{row} X1="{tmp["x1"]}" Y1="{tmp["y1"]}" X2="{tmp["x2"]}" Y2="{tmp["y2"]}"/>'
+
+        self.xaml.append(row)
+
     def setEllipse(self, line: str, geom: str):
         tmp = self.getValue(line=line, geom=geom)
         tabulation = "".join(["\t"] * self.tabulation)
@@ -181,6 +199,8 @@ class svg_2_xaml:
                 self.setText(line=line, geom=geom)
             case "<circle" | "<ellipse":
                 self.setEllipse(line=line, geom=geom)
+            case "<line":
+                self.setLine(line=line, geom=geom)
         self.name[geom] += 1
 
     def setStyle(self, line: str):
@@ -194,7 +214,7 @@ class svg_2_xaml:
                 rows = row.split("{")[1].split(";")
 
                 for row in rows:
-                    if "#" in row and not next((x for x in ["width", "miterlimit"] if x in row), False):
+                    if ("#" in row or "none" in row) and not next((x for x in ["width", "miterlimit"] if x in row), False):
                         self.setColor(line=row, key=key)
                     elif "stroke" in row:
                         self.setStroke(line=row, key=key)
@@ -217,17 +237,31 @@ class svg_2_xaml:
     def setColor(self, line: str, key=None):
         # sub_key = line.replace('style="', '') if "style=" in line else line
 
-        for match in re.finditer("fill", line):
-            idx = match.start()
+        chars = [x for x in ["fill", "stroke"] if x in line]
+        for char in chars:
+            for match in re.finditer(char, line):
+                idx = match.start()
 
-            part = line[idx:].split(" ")[0].split("#")
-            sub_key = part[0].split(" ")[-1].replace('"', '')
+                part = line[idx:].split(" ")[0].split("#")
+                sub_key = part[0].split(" ")[-1].replace('"', '')
 
-            sub_key = sub_key.replace(":", "=").split("=")[0]
+                sub_key = sub_key.replace(":", "=").split("=")[0]
 
-            color = self.setFill(line=line, sub_key=sub_key, key=key)
-            if color is not None:
-                return color
+                color = self.setFill(line=line, sub_key=sub_key, key=key)
+                if color is not None:
+                    return color
+
+        # for match in re.finditer("fill", line):
+        #     idx = match.start()
+        #
+        #     part = line[idx:].split(" ")[0].split("#")
+        #     sub_key = part[0].split(" ")[-1].replace('"', '')
+        #
+        #     sub_key = sub_key.replace(":", "=").split("=")[0]
+        #
+        #     color = self.setFill(line=line, sub_key=sub_key, key=key)
+        #     if color is not None:
+        #         return color
 
 
     def setFill(self, line: str, sub_key: str, key=None):
@@ -263,6 +297,28 @@ class svg_2_xaml:
                 self.connector.commit()
 
             return st
+        # elif row[0] == "fill":
+        #     if row[1].lower() == "none":
+        #         color = "#FF000000"
+        #         base_style = self.connector.find_value(key_name="value", value=color)
+        #
+        #         if base_style and key is None:
+        #             st = base_style[0]["class"]
+        #         else:
+        #             text = "st"
+        #             if key is None:
+        #                 st = f"{text}{self.name[text]}"
+        #                 self.name[text] += 1
+        #             else:
+        #                 st = key
+        #
+        #                 self.name[text] = int(st.replace(text, "")) + 1
+        #
+        #             type_value = "SolidColorBrush" if "fill" in sub_key else "StrokeColorBrush"
+        #
+        #             self.connector.insert_style(key=st, type_value=type_value, value=color)
+        #             self.connector.commit()
+        #         return st
 
     def getValue(self, line: str, geom: str):
         line = line.replace(f"{geom}", "").replace("/>", "").strip()
@@ -349,6 +405,11 @@ class svg_2_xaml:
             match row["type"]:
                 case "SolidColorBrush":
                     txt = f'<{row["type"]} xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="{row["class"]}" Color="{row["value"]}"/>'
+                case "StrokeColorBrush":
+                    cmd = f"""class='{row["class"]}' AND type='SolidColorBrush'"""
+                    value = self.connector.find_value_cond(table=self.table, condition=cmd)
+                    if not value:
+                        txt = f'<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="{row["class"]}" Color="{row["value"]}"/>'
                 case "font-family":
                     txt = f'<FontFamily xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="{row["class"]}">{self.getFontFamily(family=row["value"])}</FontFamily>'
                 case _:
@@ -404,7 +465,9 @@ class svg_2_xaml:
             elif "<style" in line:
                 self.setStyle(line)
 
-            if balise_geom := next((x for x in ["<g", "<path", "<rect", "<polygon", "<text", "<circle", "<ellipse"] if x in line), False):
+            if balise_geom := next(
+                    (x for x in ["<g", "<path", "<rect", "<polygon", "<text", "<circle", "<ellipse", "<line"] if x in line),
+                    False):
                 self.setGeom(line=line, geom=balise_geom)
 
             start = index

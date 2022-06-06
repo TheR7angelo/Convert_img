@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This file is compatible with Silverlight-->
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Name="Calque_1" Canvas.Left="0" Canvas.Top="0" Width="512" Height="512">
+  <Canvas.RenderTransform>
+    <TranslateTransform X="0" Y="0"/>
+  </Canvas.RenderTransform>
+  <Canvas.Resources/>
+  <!--Unknown tag: sodipodi:namedview-->
+  <Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" X1="134.41" Y1="191.25" X2="304.86" Y2="189.55" Name="line13" Fill="#000000"/>
+</Canvas>

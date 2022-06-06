@@ -60,6 +60,10 @@ class database:
         cmd = f"SELECT * FROM {table} WHERE {key_name}='{value}';"
         return self.execute(cmd).fetchall()
 
+    def find_value_cond(self, condition: str, table="t_tmp_style"):
+        cmd = f"SELECT * FROM {table} WHERE {condition};"
+        return self.execute(cmd).fetchall()
+
 
 if __name__ == '__main__':
     connector = database()
