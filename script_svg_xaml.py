@@ -494,8 +494,7 @@ class svg2xaml:
         self.connector.delete()
 
     def saveName(self, file):
-        file_name = os.path.basename(file)
-        file_name = file_name.split(".")[0]
+        file_name = os.path.basename(file).split(".")[0]
         return f"{file_name}_tmp"
 
     def convertDirSave(self, directory: str, save_directory=None):
@@ -513,6 +512,7 @@ class svg2xaml:
                 output.write(xaml)
 
             self.reset()
+        self.remove()
 
     def convertDir(self, directory: str):
         xaml = []
@@ -521,13 +521,14 @@ class svg2xaml:
         for file in self.getFiles(path=directory, ext="svg"):
             xaml.append(self.getXaml(path=file))
             self.reset()
+        self.remove()
 
         return xaml
 
     def convertFile(self, file: str):
         self.table = self.connector.create_table_style_tmp()
         xaml = self.getXaml(path=file)
-        self.reset()
+        self.remove()
         return xaml
 
     def convertFileSave(self, file: str, save_directory=None):
@@ -550,6 +551,7 @@ class svg2xaml:
 
         with open(f"{save_directory}/{self.saveName(file=file)}.xaml", "w", encoding='utf-8') as output:
             output.write(xaml)
+        self.remove()
 
 
 if __name__ == '__main__':
