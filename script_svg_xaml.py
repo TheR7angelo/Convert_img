@@ -213,7 +213,8 @@ class svg_2_xaml:
         self.connector.commit()
 
     def setColor(self, line: str, key=None):
-        sub_key = line.replace(":", "=").split("=")[0]
+        sub_key = line.split('"')[-1]
+        sub_key = sub_key.replace(":", "=").split("=")[0]
         return self.setFill(line=line, sub_key=sub_key, key=key)
 
     def setFill(self, line: str, sub_key: str, key=None):
@@ -267,6 +268,24 @@ class svg_2_xaml:
             row = row.replace('"', "")
             row = row.split("=")
             tmp[row[0]] = row[1]
+
+        if "class" not in list(tmp):
+            column_type = "SolidColorBrush"
+            column_class = "fill_black"
+            color = "#FF000000"
+            if base_style := self.connector.find_value(key_name="value", value=color):
+                for row in base_style:
+                    if row["type"] == column_type:
+                        tmp["class"] = row["class"]
+                        break
+                if "class" not in list(tmp):
+                    self.connector.insert_style(key="fill_black", type_value=column_type, value=color)
+                    self.connector.commit()
+                    tmp["class"] = column_class
+            else:
+                self.connector.insert_style(key="fill_black", type_value=column_type, value=color)
+                self.connector.commit()
+                tmp["class"] = column_class
 
         return tmp
 
@@ -393,7 +412,6 @@ class svg_2_xaml:
 
     def convertDir(self, directory):
         self.table = self.connector.create_table_style_tmp()
-        self.connector.insert_style(key="fill_black",  type_value="SolidColorBrush", value="#FF000000")
 
         for file in self.getFiles(path=directory, ext="svg"):
             truc = self.getXaml(path=file)
