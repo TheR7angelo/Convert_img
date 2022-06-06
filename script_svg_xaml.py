@@ -1,7 +1,9 @@
+import gzip
 import os
 import re
 
 import glob
+import shutil
 
 from collections import defaultdict
 
@@ -425,8 +427,20 @@ class svg2xaml:
         self.xaml = resource
 
     def getFileData(self, path: str):
+        unzip = False
+        if os.path.splitext(path)[1].lower() == ".svgz":
+            tmp = f"{os.path.splitext(path)[0]}_tmp_svgz.svg"
+            with gzip.open(path, 'rb') as f_in, open(tmp, 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
+            path = tmp
+            unzip = True
+
         with open(path, "r", encoding="UTF-8") as file:
-            return file.read()
+            data = file.read()
+
+        if unzip:
+            os.remove(path)
+        return data
 
     def getXaml(self, path: str):
         svg = self.getFileData(path=path)
@@ -512,7 +526,6 @@ class svg2xaml:
                 output.write(xaml)
 
             self.reset()
-        self.remove()
 
     def convertDir(self, directory: str):
         xaml = []
@@ -521,15 +534,12 @@ class svg2xaml:
         for file in self.getFiles(path=directory, ext="svg"):
             xaml.append(self.getXaml(path=file))
             self.reset()
-        self.remove()
 
         return xaml
 
     def convertFile(self, file: str):
         self.table = self.connector.create_table_style_tmp()
-        xaml = self.getXaml(path=file)
-        self.remove()
-        return xaml
+        return self.getXaml(path=file)
 
     def convertFileSave(self, file: str, save_directory=None):
 
@@ -551,7 +561,6 @@ class svg2xaml:
 
         with open(f"{save_directory}/{self.saveName(file=file)}.xaml", "w", encoding='utf-8') as output:
             output.write(xaml)
-        self.remove()
 
 
 if __name__ == '__main__':
@@ -561,7 +570,8 @@ if __name__ == '__main__':
     # tmp.convertDirSave(directory="test", save_directory=r"E:\Logiciels\Adobe\Creative Cloud Files\Programmation\Python\INEO Infracom\Convert_img\img\test_save")
 
     # xaml = tmp.convertDir(directory="test")
-    xaml = tmp.convertFile(file=r"E:\Logiciels\Adobe\Creative Cloud Files\Programmation\Python\INEO Infracom\Convert_img\test\line.svg")
+    #xaml = tmp.convertFile(file=r"E:\Logiciels\Adobe\Creative Cloud Files\Programmation\Python\INEO Infracom\Convert_img\test\line.svg")
+    xaml = tmp.convertFile(file=r"test/line.svgz")
     print("hey")
 
 
