@@ -152,7 +152,9 @@ class svg_2_xaml:
         tabulation = "".join(["\t"] * self.tabulation)
 
         if "fill" in line:
-            self.color_group = self.setColor(line=line)
+            color = self.setColor(line=line)
+            if color is not None:
+                self.color_group = color
 
         if "id" in line:
             name_calque = line.split('"')[1]
@@ -213,42 +215,54 @@ class svg_2_xaml:
         self.connector.commit()
 
     def setColor(self, line: str, key=None):
-        sub_key = line.split('"')[-1]
-        sub_key = sub_key.replace(":", "=").split("=")[0]
-        return self.setFill(line=line, sub_key=sub_key, key=key)
+        # sub_key = line.replace('style="', '') if "style=" in line else line
+
+        for match in re.finditer("fill", line):
+            idx = match.start()
+
+            part = line[idx:].split(" ")[0].split("#")
+            sub_key = part[0].split(" ")[-1].replace('"', '')
+
+            sub_key = sub_key.replace(":", "=").split("=")[0]
+
+            color = self.setFill(line=line, sub_key=sub_key, key=key)
+            if color is not None:
+                return color
+
 
     def setFill(self, line: str, sub_key: str, key=None):
         index = line.find(sub_key)
         row = line[index:].replace(":", "=").replace('"', '').replace(">", "").split("=")
 
-        color = row[1].replace("#", "").replace(";", "")
+        if "#" in row[1]:
+            color = row[1].replace("#", "").replace(";", "")
 
-        if len(color) == 3:  # color mode CSS
-            color = "".join([char * 2 for char in color])
+            if len(color) == 3:  # color mode CSS
+                color = "".join([char * 2 for char in color])
 
-        color = f"#FF{color}" if len(color) == 6 else f"#{color}"
-        color = color.upper()
+            color = f"#FF{color}" if len(color) == 6 else f"#{color}"
+            color = color.upper()
 
-        base_style = self.connector.find_value(key_name="value", value=color)
+            base_style = self.connector.find_value(key_name="value", value=color)
 
-        if base_style and key is None:
-            st = base_style[0]["class"]
-        else:
-            text = "st"
-            if key is None:
-                st = f"{text}{self.name[text]}"
-                self.name[text] += 1
+            if base_style and key is None:
+                st = base_style[0]["class"]
             else:
-                st = key
+                text = "st"
+                if key is None:
+                    st = f"{text}{self.name[text]}"
+                    self.name[text] += 1
+                else:
+                    st = key
 
-                self.name[text] = int(st.replace(text, "")) + 1
+                    self.name[text] = int(st.replace(text, "")) + 1
 
-            type_value = "SolidColorBrush" if "fill" in sub_key else "StrokeColorBrush"
+                type_value = "SolidColorBrush" if "fill" in sub_key else "StrokeColorBrush"
 
-            self.connector.insert_style(key=st, type_value=type_value, value=color)
-            self.connector.commit()
+                self.connector.insert_style(key=st, type_value=type_value, value=color)
+                self.connector.commit()
 
-        return st
+            return st
 
     def getValue(self, line: str, geom: str):
         line = line.replace(f"{geom}", "").replace("/>", "").strip()
@@ -269,7 +283,7 @@ class svg_2_xaml:
             row = row.split("=")
             tmp[row[0]] = row[1]
 
-        if "class" not in list(tmp):
+        if "class" not in list(tmp) and not self.color_group:
             column_type = "SolidColorBrush"
             column_class = "fill_black"
             color = "#FF000000"
