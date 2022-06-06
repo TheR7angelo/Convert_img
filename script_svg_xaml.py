@@ -8,9 +8,9 @@ from collections import defaultdict
 from script_svg_xaml_sql import database
 
 
-class svg_xaml:
+class svg_2_xaml:
 
-    def __init__(self):
+    def __init__(self, ):
         self.connector = database(file="tmp_style.sqlite")
         self.name = defaultdict(lambda: 0)
         self.tabulation = 0
@@ -40,7 +40,7 @@ class svg_xaml:
         elif "fill" in line or "class" in line:
             row = f'{row} Fill="{{StaticResource {tmp["class"]}}}"/>'
         else:
-            row = f'{row} Fill="#FF000000"/>'
+            row = f'{row} Fill="{{StaticResource fill_black}}"/>'
 
         self.xaml.append(row)
 
@@ -109,7 +109,7 @@ class svg_xaml:
         elif "fill" in line or "class" in line:
             row = f'{row} Fill="{{StaticResource {tmp["class"]}}}"/>'
         else:
-            row = f'{row} Fill="#FF000000"/>'
+            row = f'{row} Fill="{{StaticResource fill_black}}"/>'
 
         self.xaml.append(row)
 
@@ -124,7 +124,7 @@ class svg_xaml:
         elif "fill" in line or "class" in line:
             row = f'{row} Fill="{{StaticResource {tmp["class"]}}}"'
         else:
-            row = f'{row} Fill="#FF000000"'
+            row = f'{row} Fill="{{StaticResource fill_black}}"'
 
         row = f'{row} Points="{tmp["points"]}"/>'
 
@@ -142,7 +142,7 @@ class svg_xaml:
         elif "fill" in line or "class" in line:
             row = f'{row} Fill="{{StaticResource {tmp["class"]}}}"'
         else:
-            row = f'{row} Fill="#FF000000"'
+            row = f'{row} Fill="{{StaticResource fill_black}}"'
 
         row = f'{row} Data="{tmp["d"]}"/>'
 
@@ -393,6 +393,7 @@ class svg_xaml:
 
     def convertDir(self, directory):
         self.table = self.connector.create_table_style_tmp()
+        self.connector.insert_style(key="fill_black",  type_value="SolidColorBrush", value="#FF000000")
 
         for file in self.getFiles(path=directory, ext="svg"):
             truc = self.getXaml(path=file)
@@ -407,5 +408,5 @@ class svg_xaml:
 
 
 if __name__ == '__main__':
-    tmp = svg_xaml()
+    tmp = svg_2_xaml()
     tmp.convertDir(directory="test")
