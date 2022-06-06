@@ -11,7 +11,8 @@ from script_svg_xaml_sql import database
 class svg2xaml:
 
     def __init__(self, ):
-        self.connector = database(file="svg2xaml.sqlite")
+        self.tmp_bdd = "svg2xaml.sqlite"
+        self.connector = database(file=self.tmp_bdd)
         self.name = defaultdict(lambda: 0)
         self.tabulation = 0
         self.xaml = []
@@ -488,21 +489,77 @@ class svg2xaml:
         self.xaml = []
         self.color_group = ""
 
-    def convertDir(self, directory):
+    def remove(self):
+        self.connector.close()
+        self.connector.delete()
+
+    def saveName(self, file):
+        file_name = os.path.basename(file)
+        file_name = file_name.split(".")[0]
+        return f"{file_name}_tmp"
+
+    def convertDirSave(self, directory: str, save_directory=None):
+        self.table = self.connector.create_table_style_tmp()
+
+        if save_directory is None:
+            save_directory = directory
+        else:
+            os.makedirs(save_directory, exist_ok=True)
+
+        for file in self.getFiles(path=directory, ext="svg"):
+            xaml = self.getXaml(path=file)
+
+            with open(f"{save_directory}/{self.saveName(file=file)}.xaml", "w", encoding='utf-8') as output:
+                output.write(xaml)
+
+            self.reset()
+
+    def convertDir(self, directory: str):
+        xaml = []
         self.table = self.connector.create_table_style_tmp()
 
         for file in self.getFiles(path=directory, ext="svg"):
-            truc = self.getXaml(path=file)
-
-            path, file_name = os.path.split(file)
-            file_name = f'{file_name.split(".")[0]}_tmp'
-
-            with open(f"{path}/{file_name}.xaml", "w", encoding='utf-8') as output:
-                output.write(truc)
-
+            xaml.append(self.getXaml(path=file))
             self.reset()
+
+        return xaml
+
+    def convertFile(self, file: str):
+        self.table = self.connector.create_table_style_tmp()
+        xaml = self.getXaml(path=file)
+        self.reset()
+        return xaml
+
+    def convertFileSave(self, file: str, save_directory=None):
+
+        path, _ = os.path.split(file)
+
+        _, file_ext = os.path.splitext(file)
+
+        if file_ext.lower() != ".svg":
+            raise "Error this file is not a svg file"
+
+        self.table = self.connector.create_table_style_tmp()
+
+        if save_directory is None:
+            save_directory = path
+        else:
+            os.makedirs(save_directory, exist_ok=True)
+
+        xaml = self.getXaml(path=file)
+
+        with open(f"{save_directory}/{self.saveName(file=file)}.xaml", "w", encoding='utf-8') as output:
+            output.write(xaml)
 
 
 if __name__ == '__main__':
     tmp = svg2xaml()
-    tmp.convertDir(directory="test")
+
+    # tmp.convertFileSave(file=r"E:\Logiciels\Adobe\Creative Cloud Files\Programmation\Python\INEO Infracom\Convert_img\test\line.svg", save_directory="tt")
+    # tmp.convertDirSave(directory="test", save_directory=r"E:\Logiciels\Adobe\Creative Cloud Files\Programmation\Python\INEO Infracom\Convert_img\img\test_save")
+
+    # xaml = tmp.convertDir(directory="test")
+    xaml = tmp.convertFile(file=r"E:\Logiciels\Adobe\Creative Cloud Files\Programmation\Python\INEO Infracom\Convert_img\test\line.svg")
+    print("hey")
+
+
