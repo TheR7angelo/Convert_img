@@ -8,10 +8,10 @@ from collections import defaultdict
 from script_svg_xaml_sql import database
 
 
-class svg_2_xaml:
+class svg2xaml:
 
     def __init__(self, ):
-        self.connector = database(file="tmp_style.sqlite")
+        self.connector = database(file="svg2xaml.sqlite")
         self.name = defaultdict(lambda: 0)
         self.tabulation = 0
         self.xaml = []
@@ -263,7 +263,6 @@ class svg_2_xaml:
         #     if color is not None:
         #         return color
 
-
     def setFill(self, line: str, sub_key: str, key=None):
         index = line.find(sub_key)
         row = line[index:].replace(":", "=").replace('"', '').replace(">", "").split("=")
@@ -410,6 +409,8 @@ class svg_2_xaml:
                     value = self.connector.find_value_cond(table=self.table, condition=cmd)
                     if not value:
                         txt = f'<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="{row["class"]}" Color="{row["value"]}"/>'
+                    else:
+                        txt = None
                 case "font-family":
                     txt = f'<FontFamily xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="{row["class"]}">{self.getFontFamily(family=row["value"])}</FontFamily>'
                 case _:
@@ -503,5 +504,5 @@ class svg_2_xaml:
 
 
 if __name__ == '__main__':
-    tmp = svg_2_xaml()
+    tmp = svg2xaml()
     tmp.convertDir(directory="test")
