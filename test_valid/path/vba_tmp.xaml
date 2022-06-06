@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Python 3.10, SVG Convert XAML . SVG Version: 6.00 Build 0)  -->
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Name="Calque_1" Canvas.Left="0" Canvas.Top="0" Width="512" Height="512">
+	<Canvas.Resources>
+		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="fill_black" Color="#FF000000"/>
+		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st0" Color="#FFFFF5F5"/>
+		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st1" Color="#FFECE6F2"/>
+		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st2" Color="#FFD3CBE4"/>
+		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st3" Color="#FF53E261"/>
+		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st4" Color="#FF20CA78"/>
+		<FontFamily xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st5">Arial Rounded M T Bold</FontFamily>
+	</Canvas.Resources>
+	<Canvas Name="_x37_4_x2C__vb_x2C__file_type_x2C__file_format_x2C__file_extension_x2C__document">
+		<Canvas Name="XMLID_2198_">
+			<Canvas Name="XMLID_2209_">
+				<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path0" Fill="{StaticResource st0}" Data="M386,16h-20H156c-22.1,0-40,17.9-40,40v120l-10,30l10,30v220c0,22.1,17.9,40,40,40h280     c22.1,0,40-17.9,40-40V126v-20l-70-20L386,16z"/>
+				<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path1" Fill="{StaticResource st1}" Data="M386,106h90l-90-90V106z"/>
+				<Canvas Name="XMLID_2226_">
+					<Canvas Name="XMLID_1031_">
+						<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path2" Fill="{StaticResource st2}" Data="M256,106h-80c-5.5,0-10-4.5-10-10s4.5-10,10-10h80c5.5,0,10,4.5,10,10S261.5,106,256,106       z"/>
+					</Canvas>
+				</Canvas>
+				<Canvas Name="XMLID_2221_">
+					<Canvas Name="XMLID_1028_">
+						<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path3" Fill="{StaticResource st2}" Data="M336,146H176c-5.5,0-10-4.5-10-10s4.5-10,10-10h160c5.5,0,10,4.5,10,10       S341.5,146,336,146z"/>
+					</Canvas>
+				</Canvas>
+				<Canvas Name="XMLID_2216_">
+					<Canvas Name="XMLID_1025_">
+						<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path4" Fill="{StaticResource st2}" Data="M336,186H176c-5.5,0-10-4.5-10-10s4.5-10,10-10h160c5.5,0,10,4.5,10,10       S341.5,186,336,186z"/>
+					</Canvas>
+				</Canvas>
+				<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path5" Fill="{StaticResource st3}" Data="M391,236H116l-80-30v165.7c0,30,24.4,54.3,54.3,54.3H391c19.3,0,35-15.7,35-35V271     C426,251.7,410.3,236,391,236L391,236z"/>
+				<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path6" Fill="{StaticResource st4}" Data="M116,236H66c-16.6,0-30-13.4-30-30s13.4-30,30-30h50V236z"/>
+			</Canvas>
+			<TextBlock xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="57.6264" Canvas.Top="229.07199999999997" FontFamily="{StaticResource st5}" FontSize="163.4181px" Foreground="{StaticResource st0}" Name="Text0" Text="VBA"/>
+		</Canvas>
+	</Canvas>
+</Canvas>

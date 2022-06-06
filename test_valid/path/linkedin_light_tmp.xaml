@@ -2,8 +2,8 @@
 <!-- Generator: Python 3.10, SVG Convert XAML . SVG Version: 6.00 Build 0)  -->
 <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Name="Calque_1" Canvas.Left="0" Canvas.Top="0" Width="183.4" Height="30">
 	<Canvas.Resources>
-		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="fill_black" Color="#FF000000"/>
 		<FontFamily xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st2">Myriad Pro</FontFamily>
+		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="fill_black" Color="#FF000000"/>
 	</Canvas.Resources>
 	<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path0" Fill="{StaticResource st0}" Data="M178.4,1c2.2,0,4,1.8,4,4v20c0,2.2-1.8,4-4,4H5c-2.2,0-4-1.8-4-4V5c0-2.2,1.8-4,4-4H178.4 M178.4,0H5  C2.2,0,0,2.2,0,5v20c0,2.8,2.2,5,5,5h173.4c2.8,0,5-2.2,5-5V5C183.4,2.2,181.2,0,178.4,0L178.4,0z"/>
 	<Canvas Name="g0">
