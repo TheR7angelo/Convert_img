@@ -1,0 +1,67 @@
+<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Name="Svg0" Canvas.Left="0" Canvas.Top="0" Width="128" Height="128">
+	<Canvas.Resources>
+		<LinearGradientBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="a" MappingMode="Absolute" StartPoint="75.15, 5346.58" EndPoint="85.12, 5371.42">
+			<LinearGradientBrush.GradientStops>
+				<GradientStopCollection>
+					<GradientStop Color="#9775f8" Offset="0"/>
+					<GradientStop Color="#22d88f" Offset=".95"/>
+				</GradientStopCollection>
+			</LinearGradientBrush.GradientStops>
+			<LinearGradientBrush.Transform>
+				<MatrixTransform Matrix="1 0 0 -1 0 5378.82"/>
+			</LinearGradientBrush.Transform>
+		</LinearGradientBrush>
+		<LinearGradientBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="b" MappingMode="Absolute" StartPoint="31.21, 5312.56" EndPoint="44.16, 5256.16">
+			<LinearGradientBrush.GradientStops>
+				<GradientStopCollection>
+					<GradientStop Color="#9775f8" Offset="0"/>
+					<GradientStop Color="#689cce" Offset=".21"/>
+					<GradientStop Color="#42bdac" Offset=".42"/>
+					<GradientStop Color="#2bd197" Offset=".59"/>
+					<GradientStop Color="#22d88f" Offset=".69"/>
+				</GradientStopCollection>
+			</LinearGradientBrush.GradientStops>
+			<LinearGradientBrush.Transform>
+				<MatrixTransform Matrix="1 0 0 -1 0 5378.82"/>
+			</LinearGradientBrush.Transform>
+		</LinearGradientBrush>
+		<LinearGradientBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="c" MappingMode="Absolute" StartPoint="8.91, 5316.54" EndPoint="121.07, 5254.61">
+			<LinearGradientBrush.GradientStops>
+				<GradientStopCollection>
+					<GradientStop Color="#22d88f" Offset=".08"/>
+					<GradientStop Color="#9775f8" Offset=".72"/>
+				</GradientStopCollection>
+			</LinearGradientBrush.GradientStops>
+			<LinearGradientBrush.Transform>
+				<MatrixTransform Matrix="1 0 0 -1 0 5378.82"/>
+			</LinearGradientBrush.Transform>
+		</LinearGradientBrush>
+		<LinearGradientBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="d" MappingMode="Absolute" StartPoint="0, 5329.82" EndPoint="112.72, 5329.82">
+			<LinearGradientBrush.GradientStops>
+				<GradientStopCollection>
+					<GradientStop Color="#22d88f" Offset=".08"/>
+					<GradientStop Color="#5ab0b4" Offset=".27"/>
+					<GradientStop Color="#b86cf2" Offset=".56"/>
+					<GradientStop Color="#ff59e6" Offset="1"/>
+				</GradientStopCollection>
+			</LinearGradientBrush.GradientStops>
+			<LinearGradientBrush.Transform>
+				<MatrixTransform Matrix="1 0 0 -1 0 5378.82"/>
+			</LinearGradientBrush.Transform>
+		</LinearGradientBrush>
+		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st0" Color="#FF9775F8"/>
+		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="fill_black" Color="#FF000000"/>
+		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st1" Color="#FFFFFFFF"/>
+	</Canvas.Resources>
+	<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path0" Fill="{StaticResource st0}" Data="M119.8 19.8l8.2 52.4-31 18.2-6-29.8 28.8-40.8z"/>
+	<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path1" Fill="{StaticResource a}" Data="M119.8 19.8L74 0 35.6 32 91 60.6l28.8-40.8z"/>
+	<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path2" Fill="{StaticResource b}" Data="M86.4 128L33 55.8 17 66.6 1.2 114.2 86.4 128z"/>
+	<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path3" Fill="{StaticResource c}" Data="M96.6 91.6L59 67 0 59l86.4 69 10.2-36.4z"/>
+	<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path4" Fill="{StaticResource d}" Data="M0 .8V59l111 38.2 8.8-77.4L0 .8z"/>
+	<Canvas Name="g0">
+		<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path5" Fill="{StaticResource fill_black}" Data="M24 24h80v80H24z"/>
+		<Canvas Name="g2">
+			<Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Path6" Fill="{StaticResource st1}" Data="M32.11 34.4H45c10.41 0 17.61 7.15 17.61 16.47V51c0 9.32-7.19 16.56-17.61 16.56H32.11V34.4zM39.4 41v20H45c6 0 10-4 10-9.89V51c0-5.87-4-10-10-10h-5.6zM63.93 51.06V51A17 17 0 0 1 81.3 33.83c6 0 9.56 1.61 13 4.54l-4.59 5.54a12.2 12.2 0 0 0-8.66-3.36c-5.3 0-9.51 4.68-9.51 10.32V51c0 6.06 4.16 10.51 10 10.51a11.63 11.63 0 0 0 6.86-2v-4.76h-7.29v-6.29H95.5v14.38a21.5 21.5 0 0 1-14.15 5.26c-10.35 0-17.42-7.24-17.42-17.04zM31.36 88.99h30v5h-30z"/>
+		</Canvas>
+	</Canvas>
+</Canvas>

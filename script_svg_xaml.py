@@ -1,4 +1,5 @@
 import gzip
+import math
 import os
 import re
 
@@ -21,50 +22,88 @@ class svg2xaml:
         self.color_group = ""
         self.table = ""
 
+    def gradArrondi(self, value: float):
+        entier = value // 1
+        deci = value % 1
+
+        if deci >= 0.5:
+            entier += 1
+        return entier
+
     def setGradient(self, line: str):
 
         tabuleur = lambda n: "".join(["\t"] * n)
 
         matchs = re.findall("(?<=<)(.*?)(?=>)", line)
 
-        values = matchs[0].split(" ")
+        matrix = re.findall("(?<=matrix\()(.*?)(?=\))", matchs[0])
+
         tmp = {}
+
+        values = matchs[0].split(" ")
+
         for value in values:
             if "=" in value:
                 value = value.replace('"', '').replace("/", "").replace("%", "").split("=")
                 tmp[value[0].lower()] = value[1]
 
-        for sub_key in ["x1", "x2"]:
-            if float(tmp[sub_key]) > 1:
-                tmp[sub_key] = f'{float(tmp[sub_key]) / 100}'
+        tmp["mappingMode"] = "Absolute" if "gradientunits" in list(tmp) else "RelativeToBoundingBox"
 
-        key = f"class={tmp['id']};start={tmp['x1']};end={tmp['x2']}"
+        for sub_key in ["x1", "y1", "x2", "y2"]:
+            if sub_key in list(tmp):
+                match tmp["mappingMode"]:
+                    case "RelativeToBoundingBox":
+                        val = self.gradArrondi(value=float(tmp[sub_key])/100)
+                    case "Absolute":
+                        val = float(tmp[sub_key])
+                    case _:
+                        val = 0
+            else:
+                val = 0
+            tmp[sub_key] = val
+
+        key = f"class={tmp['id']};mappingMode={tmp['mappingMode']};start={tmp['x1']}, {tmp['y1']};end={tmp['x2']}, {tmp['y2']}"
 
         n = 3
-        start = f"{tabuleur(n=n)}<LinearGradientBrush.GradientStops"
-        end = f"{tabuleur(n=n)}</LinearGradientBrush.GradientStops>"
+        start_grad = f"{tabuleur(n=n)}<LinearGradientBrush.GradientStops>"
+        end_grad = f"{tabuleur(n=n)}</LinearGradientBrush.GradientStops>"
+        mid_start_trans = f"{tabuleur(n=n)}<LinearGradientBrush.Transform>"
+        mid_end_trans = f"{tabuleur(n=n)}</LinearGradientBrush.Transform>"
 
         n = 4
-        mid_start = f"{tabuleur(n=n)}<GradientStopCollection>"
-        mid_end = f"{tabuleur(n=n)}</GradientStopCollection>"
+        mid_start_grad = f"{tabuleur(n=n)}<GradientStopCollection>"
+        mid_end_grad = f"{tabuleur(n=n)}</GradientStopCollection>"
 
         n = 5
-        gradient = [start, mid_start]
+        gradient = [start_grad, mid_start_grad]
         for match in matchs[1:-1]:
+            if "/stop" in match:
+                continue
             values = match.split(" ")
             tmp = {}
             for value in values:
                 if "=" in value:
                     value = value.replace('"', '').replace("/", "").replace("%", "").split("=")
                     tmp[value[0].lower()] = value[1]
-            if float(tmp["offset"]) > 1:
-                tmp["percent"] = f'{float(tmp["offset"]) / 100}'
+
+
+            if "offset" in list(tmp):
+                if float(tmp["offset"]) > 1:
+                    tmp["percent"] = f'{float(tmp["offset"]) / 100}'
+                else:
+                    tmp["percent"] = tmp["offset"]
             else:
-                tmp["percent"] = tmp["offset"]
+                tmp["percent"] = 0
+
             txt = f'{tabuleur(n=n)}<GradientStop Color="{tmp["stop-color"]}" Offset="{tmp["percent"]}"/>'
             gradient.append(txt)
-        gradient.append(mid_end)
-        gradient.append(end)
+        gradient.append(mid_end_grad)
+        gradient.append(end_grad)
+
+        if matrix:
+            gradient.append(mid_start_trans)
+            gradient.append(f'{tabuleur(n=4)}<MatrixTransform Matrix="{matrix[0]}"/>')
+            gradient.append(mid_end_trans)
 
         self.connector.insert_style(key=key, type_value="LinearGradientBrush", value="\n".join(gradient))
         self.connector.commit()
@@ -296,7 +335,6 @@ class svg2xaml:
                 if "url" in line:
                     return re.findall("(?<=\()(.*?)(?=\))", line)[0].replace("#", "")
 
-
                 idx = match.start()
 
                 part = line[idx:].split(" ")[0].split("#")
@@ -470,6 +508,11 @@ class svg2xaml:
                         txt = None
                 case "font-family":
                     txt = f'<FontFamily xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="{row["class"]}">{self.getFontFamily(family=row["value"])}</FontFamily>'
+                case "LinearGradientBrush":
+                    tmp = [item.split("=") for item in row['class'].split(";")]
+                    tmp = {k: v for k, v in [row for row in tmp]}
+                    txt = f'<LinearGradientBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="{tmp["class"]}" MappingMode="{tmp["mappingMode"]}" StartPoint="{tmp["start"]}" EndPoint="{tmp["end"]}">'
+                    txt = f'{txt}\n{row["value"]}\n{tab}</LinearGradientBrush>'
                 case _:
                     txt = None
             if txt is not None:
@@ -581,7 +624,7 @@ class svg2xaml:
             with open(f"{save_directory}/{self.saveName(file=file)}.xaml", "w", encoding='utf-8') as output:
                 output.write(xaml)
 
-            # self.reset()
+            self.reset()
 
     def convertDir(self, directory: str):
         xaml = []
