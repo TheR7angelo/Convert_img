@@ -21,6 +21,54 @@ class svg2xaml:
         self.color_group = ""
         self.table = ""
 
+    def setGradient(self, line: str):
+
+        tabuleur = lambda n: "".join(["\t"] * n)
+
+        matchs = re.findall("(?<=<)(.*?)(?=>)", line)
+
+        values = matchs[0].split(" ")
+        tmp = {}
+        for value in values:
+            if "=" in value:
+                value = value.replace('"', '').replace("/", "").replace("%", "").split("=")
+                tmp[value[0].lower()] = value[1]
+
+        for sub_key in ["x1", "x2"]:
+            if float(tmp[sub_key]) > 1:
+                tmp[sub_key] = f'{float(tmp[sub_key]) / 100}'
+
+        key = f"class={tmp['id']};start={tmp['x1']};end={tmp['x2']}"
+
+        n = 3
+        start = f"{tabuleur(n=n)}<LinearGradientBrush.GradientStops"
+        end = f"{tabuleur(n=n)}</LinearGradientBrush.GradientStops>"
+
+        n = 4
+        mid_start = f"{tabuleur(n=n)}<GradientStopCollection>"
+        mid_end = f"{tabuleur(n=n)}</GradientStopCollection>"
+
+        n = 5
+        gradient = [start, mid_start]
+        for match in matchs[1:-1]:
+            values = match.split(" ")
+            tmp = {}
+            for value in values:
+                if "=" in value:
+                    value = value.replace('"', '').replace("/", "").replace("%", "").split("=")
+                    tmp[value[0].lower()] = value[1]
+            if float(tmp["offset"]) > 1:
+                tmp["percent"] = f'{float(tmp["offset"]) / 100}'
+            else:
+                tmp["percent"] = tmp["offset"]
+            txt = f'{tabuleur(n=n)}<GradientStop Color="{tmp["stop-color"]}" Offset="{tmp["percent"]}"/>'
+            gradient.append(txt)
+        gradient.append(mid_end)
+        gradient.append(end)
+
+        self.connector.insert_style(key=key, type_value="LinearGradientBrush", value="\n".join(gradient))
+        self.connector.commit()
+
     def setLine(self, line: str, geom: str):
         tmp = self.getValue(line=line, geom=geom)
 
@@ -217,7 +265,8 @@ class svg2xaml:
                 rows = row.split("{")[1].split(";")
 
                 for row in rows:
-                    if ("#" in row or "none" in row) and not next((x for x in ["width", "miterlimit"] if x in row), False):
+                    if ("#" in row or "none" in row) and not next((x for x in ["width", "miterlimit"] if x in row),
+                                                                  False):
                         self.setColor(line=row, key=key)
                     elif "stroke" in row:
                         self.setStroke(line=row, key=key)
@@ -243,6 +292,11 @@ class svg2xaml:
         chars = [x for x in ["fill", "stroke"] if x in line]
         for char in chars:
             for match in re.finditer(char, line):
+
+                if "url" in line:
+                    return re.findall("(?<=\()(.*?)(?=\))", line)[0].replace("#", "")
+
+
                 idx = match.start()
 
                 part = line[idx:].split(" ")[0].split("#")
@@ -454,8 +508,9 @@ class svg2xaml:
             chars = [x for x in ["\n", "\t", "\r"] if x in line]
             for char in chars:
                 line = line.replace(char, " ")
+            line = line.strip()
 
-            if balise_geom := next((x for x in ["<style", "<text"] if x in line), False):
+            if balise_geom := next((x for x in ["<style", "<text", "<linearGradient"] if x in line), False):
                 text = f"{balise_geom[:1]}/{balise_geom[1:]}>"
                 index = svg[start:].find(text) + len(text) + start
                 line = svg[start:index].replace("\n", "")
@@ -480,10 +535,11 @@ class svg2xaml:
 
             elif "<style" in line:
                 self.setStyle(line)
+            elif "<linearGradient" in line:
+                self.setGradient(line=line)
 
-            if balise_geom := next(
-                    (x for x in ["<g", "<path", "<rect", "<polygon", "<text", "<circle", "<ellipse", "<line"] if x in line),
-                    False):
+            elif balise_geom := next(
+                    (x for x in ["<g", "<path", "<rect", "<polygon", "<text", "<circle", "<ellipse", "<line"] if x in line), False):
                 self.setGeom(line=line, geom=balise_geom)
 
             start = index
@@ -525,7 +581,7 @@ class svg2xaml:
             with open(f"{save_directory}/{self.saveName(file=file)}.xaml", "w", encoding='utf-8') as output:
                 output.write(xaml)
 
-            self.reset()
+            # self.reset()
 
     def convertDir(self, directory: str):
         xaml = []
@@ -569,9 +625,7 @@ if __name__ == '__main__':
     # tmp.convertFileSave(file=r"E:\Logiciels\Adobe\Creative Cloud Files\Programmation\Python\INEO Infracom\Convert_img\test\line.svg", save_directory="tt")
     # tmp.convertDirSave(directory="test", save_directory=r"E:\Logiciels\Adobe\Creative Cloud Files\Programmation\Python\INEO Infracom\Convert_img\img\test_save")
 
-    # xaml = tmp.convertDir(directory="test")
-    #xaml = tmp.convertFile(file=r"E:\Logiciels\Adobe\Creative Cloud Files\Programmation\Python\INEO Infracom\Convert_img\test\line.svg")
-    xaml = tmp.convertFile(file=r"test/line.svgz")
+    xaml = tmp.convertDirSave(directory="test")
+    # xaml = tmp.convertFile(file=r"E:\Logiciels\Adobe\Creative Cloud Files\Programmation\Python\INEO Infracom\Convert_img\test\line.svg")
+    # xaml = tmp.convertFile(file=r"test/line.svgz")
     print("hey")
-
-

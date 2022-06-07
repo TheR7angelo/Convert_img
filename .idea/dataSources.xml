@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="data" uuid="554eb935-b97b-4866-896d-d8d6f5f4e29a">
+    <data-source source="LOCAL" name="svg2xaml" uuid="fd69336f-00be-4ebb-841c-8925957f3131">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:E:\Logiciels\Adobe\Creative Cloud Files\Programmation\Python\INEO Infracom\Convert_img\data.sqlite</jdbc-url>
+      <jdbc-url>jdbc:sqlite:C:\Users\ZP6177\Creative Cloud Files\Programmation\Python\INEO Infracom\Convert_img\svg2xaml.sqlite</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
       <libraries>
         <library>
