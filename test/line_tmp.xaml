@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Python 3.10, SVG Convert XAML . SVG Version: 6.00 Build 0)  -->
-<Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Name="Calque_1" Canvas.Left="0" Canvas.Top="0" Width="512" Height="512">
-	<Canvas.Resources>
-		<SolidColorBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="st0" Color="#FF1DB31B"/>
-	</Canvas.Resources>
-	<Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Line0" Fill="{StaticResource st0}" X1="134.4" Y1="191.2" X2="304.9" Y2="189.6"/>
-</Canvas>
